@@ -1,0 +1,57 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav
+    #sidenav
+    mode="side"
+    [opened]="sidenavOpened()"
+    class="sidenav">
+
+    <!-- Logo e titolo app -->
+    <div class="sidenav-header">
+      <mat-icon class="logo-icon">local_hospital</mat-icon>
+      <h1 class="app-title">{{ 'app.title' | translate }}</h1>
+    </div>
+
+    <!-- Menu di navigazione -->
+    <mat-nav-list>
+      @for (item of navItems; track item.path) {
+      <a
+        mat-list-item
+        [routerLink]="item.path"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{exact: item.path === '/dashboard'}">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.labelKey | translate }}</span>
+        </a>
+      }
+    </mat-nav-list>
+
+    <!-- Footer sidebar con versione -->
+    <div class="sidenav-footer">
+      <small class="version">v1.0.0 - Fase 1 MVP</small>
+    </div>
+  </mat-sidenav>
+
+  <!-- Contenuto principale -->
+  <mat-sidenav-content>
+    <!-- Toolbar superiore -->
+    <mat-toolbar class="toolbar">
+      <button
+        mat-icon-button
+        (click)="toggleSidenav()"
+        aria-label="Toggle sidenav">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="toolbar-spacer"></span>
+
+      <!-- Language selector -->
+      <app-language-selector></app-language-selector>
+    </mat-toolbar>
+
+    <!-- Area contenuto con router outlet -->
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

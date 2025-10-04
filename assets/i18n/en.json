@@ -1,0 +1,101 @@
+{
+  "app": {
+    "title": "Gynecology Manager",
+    "language": "Language"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "add": "Add",
+    "back": "Back",
+    "confirm": "Confirm",
+    "close": "Close",
+    "actions": "Actions",
+    "loading": "Loading...",
+    "no_data": "No data available",
+    "error": "Error",
+    "success": "Operation completed successfully"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "reports": "Reports",
+    "invoices": "Invoices",
+    "appointments": "Appointments",
+    "settings": "Settings"
+  },
+  "patient": {
+    "title": "Patients",
+    "add_patient": "Add Patient",
+    "edit_patient": "Edit Patient",
+    "patient_details": "Patient Details",
+    "search_placeholder": "Search by name, surname or fiscal code...",
+    "fields": {
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "birth_date": "Date of Birth",
+      "birth_place": "Place of Birth",
+      "fiscal_code": "Fiscal Code",
+      "phone": "Phone",
+      "mobile": "Mobile",
+      "email": "Email",
+      "address": "Address",
+      "city": "City",
+      "postal_code": "Postal Code",
+      "province": "Province",
+      "country": "Country",
+      "blood_type": "Blood Type",
+      "allergies": "Allergies",
+      "current_medications": "Current Medications",
+      "medical_notes": "Medical Notes",
+      "family_medical_history": "Family Medical History",
+      "first_menstruation_age": "Age at First Menstruation",
+      "menstrual_cycle_days": "Menstrual Cycle (days)",
+      "last_menstruation_date": "Last Menstruation Date",
+      "contraception_method": "Contraception Method",
+      "pap_test_last_date": "Last PAP Test Date",
+      "mammography_last_date": "Last Mammography Date"
+    },
+    "sections": {
+      "personal_data": "Personal Data",
+      "contacts": "Contacts",
+      "medical_data": "General Medical Data",
+      "gynecological_data": "Gynecological Data",
+      "deliveries": "Delivery History",
+      "privacy": "Privacy Consents"
+    },
+    "deliveries": {
+      "title": "Delivery History",
+      "add_delivery": "Add Delivery",
+      "delivery_date": "Delivery Date",
+      "delivery_type": "Delivery Type",
+      "types": {
+        "natural": "Natural",
+        "cesarean": "Cesarean",
+        "assisted": "Assisted (vacuum/forceps)"
+      },
+      "pregnancy_weeks": "Pregnancy Weeks",
+      "baby_weight": "Baby Weight (grams)",
+      "baby_gender": "Baby Gender",
+      "gender": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "complications": "Complications",
+      "notes": "Notes"
+    },
+    "tabs": {
+      "info": "Information",
+      "reports": "Reports",
+      "invoices": "Invoices",
+      "timeline": "Timeline"
+    },
+    "privacy": {
+      "consent": "Data Processing Consent",
+      "marketing": "Marketing Consent"
+    }
+  }
+}

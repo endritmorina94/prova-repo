@@ -1,0 +1,101 @@
+{
+  "app": {
+    "title": "Menaxhim Gjinekologjik",
+    "language": "Gjuha"
+  },
+  "common": {
+    "save": "Ruaj",
+    "cancel": "Anulo",
+    "delete": "Fshi",
+    "edit": "Ndrysho",
+    "search": "Kërko",
+    "add": "Shto",
+    "back": "Kthehu",
+    "confirm": "Konfirmo",
+    "close": "Mbyll",
+    "actions": "Veprime",
+    "loading": "Duke ngarkuar...",
+    "no_data": "Nuk ka të dhëna",
+    "error": "Gabim",
+    "success": "Operacioni u krye me sukses"
+  },
+  "nav": {
+    "dashboard": "Paneli",
+    "patients": "Pacientët",
+    "reports": "Raportet",
+    "invoices": "Faturat",
+    "appointments": "Takimet",
+    "settings": "Cilësimet"
+  },
+  "patient": {
+    "title": "Pacientët",
+    "add_patient": "Shto Pacient",
+    "edit_patient": "Ndrysho Pacient",
+    "patient_details": "Detajet e Pacientit",
+    "search_placeholder": "Kërko sipas emrit, mbiemrit ose kodit fiskal...",
+    "fields": {
+      "first_name": "Emri",
+      "last_name": "Mbiemri",
+      "birth_date": "Data e Lindjes",
+      "birth_place": "Vendi i Lindjes",
+      "fiscal_code": "Kodi Fiskal",
+      "phone": "Telefon",
+      "mobile": "Celular",
+      "email": "Email",
+      "address": "Adresa",
+      "city": "Qyteti",
+      "postal_code": "Kodi Postar",
+      "province": "Provinca",
+      "country": "Shteti",
+      "blood_type": "Grupi i Gjakut",
+      "allergies": "Alergjitë",
+      "current_medications": "Barnat Aktuale",
+      "medical_notes": "Shënime Mjekësore",
+      "family_medical_history": "Historia Mjekësore Familjare",
+      "first_menstruation_age": "Mosha e Ciklit të Parë",
+      "menstrual_cycle_days": "Kohëzgjatja e Ciklit (ditë)",
+      "last_menstruation_date": "Data e Ciklit të Fundit",
+      "contraception_method": "Metoda Kontraceptive",
+      "pap_test_last_date": "Data e PAP Test të Fundit",
+      "mammography_last_date": "Data e Mamografisë së Fundit"
+    },
+    "sections": {
+      "personal_data": "Të Dhënat Personale",
+      "contacts": "Kontaktet",
+      "medical_data": "Të Dhënat Mjekësore të Përgjithshme",
+      "gynecological_data": "Të Dhënat Gjinekologjike",
+      "deliveries": "Historia e Lindjes",
+      "privacy": "Pëlqimet e Privatësisë"
+    },
+    "deliveries": {
+      "title": "Historia e Lindjes",
+      "add_delivery": "Shto Lindje",
+      "delivery_date": "Data e Lindjes",
+      "delivery_type": "Lloji i Lindjes",
+      "types": {
+        "natural": "Natyrale",
+        "cesarean": "Cezariane",
+        "assisted": "E Asistuar (me vakum/forceps)"
+      },
+      "pregnancy_weeks": "Javët e Shtatzënisë",
+      "baby_weight": "Pesha e Fëmijës (gramë)",
+      "baby_gender": "Gjinia e Fëmijës",
+      "gender": {
+        "male": "Mashkull",
+        "female": "Femër"
+      },
+      "complications": "Komplikacione",
+      "notes": "Shënime"
+    },
+    "tabs": {
+      "info": "Informacione",
+      "reports": "Raportet",
+      "invoices": "Faturat",
+      "timeline": "Kronologjia"
+    },
+    "privacy": {
+      "consent": "Pëlqimi për Përpunimin e të Dhënave",
+      "marketing": "Pëlqimi për Marketing"
+    }
+  }
+}

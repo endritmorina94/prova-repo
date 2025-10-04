@@ -1,0 +1,85 @@
+<div class="reports-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>{{ 'report.title' | translate }}</h1>
+  </div>
+
+  <!-- Barra di ricerca -->
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Cerca per numero, paziente o tipo visita...</mat-label>
+      <input
+        (keyup)="applyFilter($event)"
+        matInput
+        type="text">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Loading spinner -->
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Tabella referti -->
+  @if (!loading) {
+    <mat-card class="table-card">
+      <table [dataSource]="dataSource" class="reports-table" mat-table>
+
+        <!-- Colonna Numero Referto -->
+        <ng-container matColumnDef="reportNumber">
+          <th *matHeaderCellDef mat-header-cell>{{ 'report.report_number' | translate }}</th>
+          <td *matCellDef="let report" mat-cell>
+            <strong>{{ report.reportNumber }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Colonna Paziente -->
+        <ng-container matColumnDef="patient">
+          <th *matHeaderCellDef mat-header-cell>Paziente</th>
+          <td *matCellDef="let report" mat-cell>{{ report.patientName }}</td>
+        </ng-container>
+
+        <!-- Colonna Data -->
+        <ng-container matColumnDef="reportDate">
+          <th *matHeaderCellDef mat-header-cell>{{ 'report.report_date' | translate }}</th>
+          <td *matCellDef="let report" mat-cell>{{ formatDate(report.reportDate) }}</td>
+        </ng-container>
+
+        <!-- Colonna Tipo Visita -->
+        <ng-container matColumnDef="visitType">
+          <th *matHeaderCellDef mat-header-cell>{{ 'report.visit_type' | translate }}</th>
+          <td *matCellDef="let report" mat-cell>
+            <mat-chip>{{ getVisitTypeLabel(report.visitType) }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonna Azioni -->
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell>{{ 'common.actions' | translate }}</th>
+          <td *matCellDef="let report" mat-cell>
+            <button
+              (click)="downloadPDF(report)"
+              mat-icon-button
+              matTooltip="Scarica PDF">
+              <mat-icon>download</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+      </table>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [length]="dataSource.data.length"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        [pageSize]="10"
+        [showFirstLastButtons]="true">
+      </mat-paginator>
+    </mat-card>
+  }
+</div>

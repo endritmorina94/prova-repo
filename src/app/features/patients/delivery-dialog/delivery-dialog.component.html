@@ -1,0 +1,98 @@
+<h2 mat-dialog-title>
+  @if (isEditMode()) {
+    {{ 'patient.deliveries.edit_delivery' | translate }}
+  } @else {
+    {{ 'patient.deliveries.add_delivery' | translate }}
+  }
+</h2>
+<mat-dialog-content>
+  <form [formGroup]="deliveryForm"
+        class="delivery-form">
+    <!-- Data Parto -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'patient.deliveries.delivery_date' | translate }} *</mat-label>
+      <input [matDatepicker]="deliveryDatePicker"
+             formControlName="deliveryDate"
+             matInput>
+      <mat-datepicker-toggle [for]="deliveryDatePicker"
+                             matIconSuffix></mat-datepicker-toggle>
+      <mat-datepicker #deliveryDatePicker></mat-datepicker>
+      @if (deliveryForm.get('deliveryDate')?.invalid && deliveryForm.get('deliveryDate')?.touched) {
+        <mat-error>{{ getErrorMessage('deliveryDate') }}</mat-error>
+      }
+    </mat-form-field>
+    <!-- Tipo Parto -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'patient.deliveries.delivery_type' | translate }} *</mat-label>
+      <mat-select formControlName="deliveryType">
+        @for (type of deliveryTypes; track type.value) {
+          <mat-option [value]="type.value">{{ type.labelKey | translate }}</mat-option>
+        }
+      </mat-select>
+      @if (deliveryForm.get('deliveryType')?.invalid && deliveryForm.get('deliveryType')?.touched) {
+        <mat-error>{{ getErrorMessage('deliveryType') }}</mat-error>
+      }
+    </mat-form-field>
+    <!-- Settimane Gravidanza -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'patient.deliveries.pregnancy_weeks' | translate }}</mat-label>
+      <input formControlName="pregnancyWeeks"
+             matInput
+             max="45"
+             min="20"
+             type="number">
+      @if (deliveryForm.get('pregnancyWeeks')?.invalid && deliveryForm.get('pregnancyWeeks')?.touched) {
+        <mat-error>{{ getErrorMessage('pregnancyWeeks') }}</mat-error>
+      }
+    </mat-form-field>
+    <!-- Peso Bambino -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'patient.deliveries.baby_weight' | translate }}</mat-label>
+      <input formControlName="babyWeight"
+             matInput
+             max="6000"
+             min="500"
+             type="number">
+      <span matTextSuffix>g</span>
+      @if (deliveryForm.get('babyWeight')?.invalid && deliveryForm.get('babyWeight')?.touched) {
+        <mat-error>{{ getErrorMessage('babyWeight') }}</mat-error>
+      }
+    </mat-form-field>
+    <!-- Sesso Bambino -->
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'patient.deliveries.baby_gender' | translate }}</mat-label>
+      <mat-select formControlName="babyGender">
+        @for (gender of genderOptions; track gender.value) {
+          <mat-option [value]="gender.value">{{ gender.labelKey | translate }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <!-- Complicazioni -->
+    <mat-form-field appearance="outline"
+                    class="full-width">
+      <mat-label>{{ 'patient.deliveries.complications' | translate }}</mat-label>
+      <textarea formControlName="complications"
+                matInput
+                rows="3"></textarea>
+    </mat-form-field>
+    <!-- Note -->
+    <mat-form-field appearance="outline"
+                    class="full-width">
+      <mat-label>{{ 'patient.deliveries.notes' | translate }}</mat-label>
+      <textarea formControlName="notes"
+                matInput
+                rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button (click)="onCancel()"
+          mat-button>
+    {{ 'common.cancel' | translate }}
+  </button>
+  <button (click)="onSubmit()"
+          color="primary"
+          mat-raised-button>
+    {{ 'common.save' | translate }}
+  </button>
+</mat-dialog-actions>

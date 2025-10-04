@@ -1,0 +1,379 @@
+<div class="patient-detail-container">
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Dettaglio Paziente -->
+  @if (!loading() && patient()) {
+    <!-- Header con azioni -->
+    <div class="header">
+      <button (click)="goBack()"
+              mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-info">
+        <h1>{{ patient()!.firstName }} {{ patient()!.lastName }}</h1>
+        <p class="subtitle">
+          {{ calculateAge(patient()!.birthDate) }} anni •
+          {{ formatDate(patient()!.birthDate) }}
+        </p>
+      </div>
+    <div class="header-actions">
+      <button [queryParams]="{patientId: patientId()}" [routerLink]="['/reports/new']" mat-button>
+        <mat-icon>description</mat-icon>
+        {{ 'report.new_report' | translate }}
+      </button>
+
+      <button [queryParams]="{patientId: patientId()}" [routerLink]="['/invoices/new']" mat-button>
+        <mat-icon>receipt</mat-icon>
+        {{ 'invoice.new_invoice' | translate }}
+      </button>
+
+      <button (click)="editPatient()" color="primary" mat-raised-button>
+        <mat-icon>edit</mat-icon>
+        {{ 'common.edit' | translate }}
+      </button>
+    </div>
+    </div>
+    <mat-tab-group>
+      <!-- TAB 1: Informazioni -->
+      <mat-tab [label]="'patient.tabs.info' | translate">
+        <div class="tab-content">
+          <!-- Dati Anagrafici -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'patient.sections.personal_data' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.first_name' | translate }}</span>
+                  <span class="value">{{ patient()!.firstName }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.last_name' | translate }}</span>
+                  <span class="value">{{ patient()!.lastName }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.birth_date' | translate }}</span>
+                  <span class="value">{{ formatDate(patient()!.birthDate) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.birth_place' | translate }}</span>
+                  <span class="value">{{ patient()!.birthPlace || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.fiscal_code' | translate }}</span>
+                  <span class="value">{{ patient()!.fiscalCode || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.country' | translate }}</span>
+                  <span class="value">{{ patient()!.country }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <!-- Contatti -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'patient.sections.contacts' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.phone' | translate }}</span>
+                  <span class="value">{{ patient()!.phone || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.mobile' | translate }}</span>
+                  <span class="value">{{ patient()!.mobile || '-' }}</span>
+                </div>
+                <div class="info-item full-width">
+                  <span class="label">{{ 'patient.fields.email' | translate }}</span>
+                  <span class="value">{{ patient()!.email || '-' }}</span>
+                </div>
+                <div class="info-item full-width">
+                  <span class="label">{{ 'patient.fields.address' | translate }}</span>
+                  <span class="value">
+                    {{ patient()!.address || '-' }}
+                    @if (patient()!.city) {
+                      <br>{{ patient()!.postalCode }} {{ patient()!.city }} ({{ patient()!.province }})
+                    }
+                  </span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <!-- Dati Medici -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'patient.sections.medical_data' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.blood_type' | translate }}</span>
+                  <span class="value">{{ patient()!.bloodType || '-' }}</span>
+                </div>
+                <div class="info-item"></div>
+                <div class="info-item full-width">
+                  <span class="label">{{ 'patient.fields.allergies' | translate }}</span>
+                  <span class="value">{{ patient()!.allergies || '-' }}</span>
+                </div>
+                <div class="info-item full-width">
+                  <span class="label">{{ 'patient.fields.current_medications' | translate }}</span>
+                  <span class="value">{{ patient()!.currentMedications || '-' }}</span>
+                </div>
+                <div class="info-item full-width">
+                  <span class="label">{{ 'patient.fields.medical_notes' | translate }}</span>
+                  <span class="value">{{ patient()!.medicalNotes || '-' }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <!-- Dati Ginecologici -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'patient.sections.gynecological_data' | translate }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.first_menstruation_age' | translate }}</span>
+                  <span class="value">{{ patient()!.firstMenstruationAge || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.menstrual_cycle_days' | translate }}</span>
+                  <span class="value">{{ patient()!.menstrualCycleDays || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.last_menstruation_date' | translate }}</span>
+                  <span class="value">{{ formatDate(patient()!.lastMenstruationDate) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.contraception_method' | translate }}</span>
+                  <span class="value">{{ patient()!.contraceptionMethod || '-' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.pap_test_last_date' | translate }}</span>
+                  <span class="value">{{ formatDate(patient()!.papTestLastDate) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">{{ 'patient.fields.mammography_last_date' | translate }}</span>
+                  <span class="value">{{ formatDate(patient()!.mammographyLastDate) }}</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <!-- Storico Parti -->
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>{{ 'patient.deliveries.title' | translate }}</mat-card-title>
+              <button
+                (click)="addDelivery()"
+                class="add-delivery-button"
+                color="primary"
+                mat-icon-button>
+                <mat-icon>add</mat-icon>
+              </button>
+            </mat-card-header>
+            <mat-card-content>
+              @if (deliveries().length > 0) {
+                <div class="deliveries-list">
+                  @for (delivery of deliveries(); track delivery.id; let last = $last) {
+                    <div class="delivery-item">
+                      <div class="delivery-header">
+                        <mat-icon>child_care</mat-icon>
+                        <strong>{{ formatDate(delivery.deliveryDate) }}</strong>
+                        <mat-chip>{{ getDeliveryTypeLabel(delivery.deliveryType) }}</mat-chip>
+                        <div class="delivery-actions">
+                          <button
+                            (click)="editDelivery(delivery)"
+                            mat-icon-button
+                            matTooltip="Modifica">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button
+                            (click)="deleteDelivery(delivery)"
+                            color="warn"
+                            mat-icon-button
+                            matTooltip="Elimina">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="delivery-details">
+                        @if (delivery.pregnancyWeeks) {
+                          <span>{{ delivery.pregnancyWeeks }} settimane</span>
+                        }
+                        @if (delivery.babyWeight) {
+                          <span>{{ delivery.babyWeight }}g</span>
+                        }
+                        @if (delivery.babyGender) {
+                          <span>{{ getGenderLabel(delivery.babyGender) }}</span>
+                        }
+                      </div>
+                      @if (delivery.complications || delivery.notes) {
+                        <div class="delivery-notes">
+                          @if (delivery.complications) {
+                            <p><strong>Complicazioni:</strong> {{ delivery.complications }}</p>
+                          }
+                          @if (delivery.notes) {
+                            <p><strong>Note:</strong> {{ delivery.notes }}</p>
+                          }
+                        </div>
+                      }
+                    </div>
+                    @if (!last) {
+                      <mat-divider></mat-divider>
+                    }
+                  }
+                </div>
+              } @else {
+                <div class="empty-message-container">
+                  <p class="empty-message">Nessun parto registrato</p>
+                  <button (click)="addDelivery()"
+                          color="primary"
+                          mat-raised-button>
+                    <mat-icon>add</mat-icon>
+                    {{ 'patient.deliveries.add_delivery' | translate }}
+                  </button>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+      <!-- TAB 2: Referti (Placeholder) -->
+      <mat-tab [label]="'patient.tabs.reports' | translate">
+        <div class="tab-content">
+          @if (reports().length > 0) {
+            <mat-card>
+              <mat-card-content>
+                <div class="reports-list">
+                  @for (report of reports(); track report.id) {
+                    <div class="report-item">
+                      <div class="report-header">
+                        <mat-icon>description</mat-icon>
+                        <div class="report-info">
+                          <strong>{{ report.reportNumber }}</strong>
+                          <span class="report-meta">
+                            {{ formatDate(report.reportDate) }} •
+                            {{ getVisitTypeLabel(report.visitType) }}
+                          </span>
+                        </div>
+                        <div class="report-actions">
+                          <button
+                            (click)="downloadReportPDF(report)"
+                            mat-icon-button
+                            matTooltip="Scarica PDF">
+                            <mat-icon>download</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                      @if (report.examination) {
+                        <div class="report-preview">
+                          {{ report.examination.substring(0, 150) }}...
+                        </div>
+                      }
+                    </div>
+                    <mat-divider></mat-divider>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <mat-card>
+              <mat-card-content>
+                <div class="empty-state">
+                  <mat-icon>description</mat-icon>
+                  <p>Nessun referto registrato</p>
+                  <button
+                    [queryParams]="{patientId: patientId()}"
+                    [routerLink]="['/reports/new']"
+                    color="primary"
+                    mat-raised-button>
+                    <mat-icon>add</mat-icon>
+                    {{ 'report.new_report' | translate }}
+                  </button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+      <!-- TAB 3: Fatture (Placeholder) -->
+      <mat-tab [label]="'patient.tabs.invoices' | translate">
+        <div class="tab-content">
+          @if (invoices().length > 0) {
+            <mat-card>
+              <mat-card-content>
+                <div class="invoices-list">
+                  @for (invoice of invoices(); track invoice.id) {
+                    <div class="invoice-item">
+                      <div class="invoice-header">
+                        <mat-icon>receipt</mat-icon>
+                        <div class="invoice-info">
+                          <strong>{{ invoice.invoiceNumber }}</strong>
+                          <span class="invoice-meta">
+                            {{ formatDate(invoice.invoiceDate) }} •
+                            {{ getPaymentStatusLabel(invoice.paymentStatus) }}
+                          </span>
+                        </div>
+                        <div class="invoice-amount">
+                          <strong>€ {{ invoice.totalAmount | number:'1.2-2' }}</strong>
+                        </div>
+                        <div class="invoice-actions">
+                          <button
+                            (click)="downloadInvoicePDF(invoice)"
+                            mat-icon-button
+                            matTooltip="Scarica PDF">
+                            <mat-icon>download</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <mat-card>
+              <mat-card-content>
+                <div class="empty-state">
+                  <mat-icon>receipt</mat-icon>
+                  <p>Nessuna fattura registrata</p>
+                  <button
+                    [queryParams]="{patientId: patientId()}"
+                    [routerLink]="['/invoices/new']"
+                    color="primary"
+                    mat-raised-button>
+                    <mat-icon>add</mat-icon>
+                    {{ 'invoice.new_invoice' | translate }}
+                  </button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+      <!-- TAB 4: Timeline (Placeholder) -->
+      <mat-tab [label]="'patient.tabs.timeline' | translate">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-content>
+              <div class="empty-state">
+                <mat-icon>timeline</mat-icon>
+                <p>Timeline attività disponibile prossimamente</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  }
+</div>

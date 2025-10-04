@@ -1,0 +1,219 @@
+{
+  "app": {
+    "title": "Menaxhim Gjinekologjik",
+    "language": "Gjuha"
+  },
+  "common": {
+    "save": "Ruaj",
+    "cancel": "Anulo",
+    "delete": "Fshi",
+    "edit": "Ndrysho",
+    "search": "Kërko",
+    "add": "Shto",
+    "back": "Kthehu",
+    "confirm": "Konfirmo",
+    "close": "Mbyll",
+    "actions": "Veprime",
+    "loading": "Duke ngarkuar...",
+    "no_data": "Nuk ka të dhëna",
+    "error": "Gabim",
+    "success": "Operacioni u krye me sukses",
+    "view": "Shiko",
+    "coming_soon": "Së shpejti",
+    "years": "vjeç"
+  },
+  "nav": {
+    "dashboard": "Paneli",
+    "patients": "Pacientët",
+    "reports": "Raportet",
+    "invoices": "Faturat",
+    "appointments": "Takimet",
+    "settings": "Cilësimet"
+  },
+  "patient": {
+    "title": "Pacientët",
+    "add_patient": "Shto Pacient",
+    "edit_patient": "Ndrysho Pacient",
+    "patient_details": "Detajet e Pacientit",
+    "search_placeholder": "Kërko sipas emrit, mbiemrit ose kodit fiskal...",
+    "fields": {
+      "first_name": "Emri",
+      "last_name": "Mbiemri",
+      "birth_date": "Data e Lindjes",
+      "birth_place": "Vendi i Lindjes",
+      "fiscal_code": "Kodi Fiskal",
+      "phone": "Telefon",
+      "mobile": "Celular",
+      "email": "Email",
+      "address": "Adresa",
+      "city": "Qyteti",
+      "postal_code": "Kodi Postar",
+      "province": "Provinca",
+      "country": "Shteti",
+      "blood_type": "Grupi i Gjakut",
+      "allergies": "Alergjitë",
+      "current_medications": "Barnat Aktuale",
+      "medical_notes": "Shënime Mjekësore",
+      "family_medical_history": "Historia Mjekësore Familjare",
+      "first_menstruation_age": "Mosha e Ciklit të Parë",
+      "menstrual_cycle_days": "Kohëzgjatja e Ciklit (ditë)",
+      "last_menstruation_date": "Data e Ciklit të Fundit",
+      "contraception_method": "Metoda Kontraceptive",
+      "pap_test_last_date": "Data e PAP Test të Fundit",
+      "mammography_last_date": "Data e Mamografisë së Fundit"
+    },
+    "sections": {
+      "personal_data": "Të Dhënat Personale",
+      "contacts": "Kontaktet",
+      "medical_data": "Të Dhënat Mjekësore të Përgjithshme",
+      "gynecological_data": "Të Dhënat Gjinekologjike",
+      "deliveries": "Historia e Lindjes",
+      "privacy": "Pëlqimet e Privatësisë"
+    },
+    "deliveries": {
+      "title": "Historia e Lindjes",
+      "add_delivery": "Shto Lindje",
+      "edit_delivery": "Ndrysho Lindje",
+      "delivery_date": "Data e Lindjes",
+      "delivery_type": "Lloji i Lindjes",
+      "types": {
+        "natural": "Natyrale",
+        "cesarean": "Cezariane",
+        "assisted": "E Asistuar (me vakum/forceps)"
+      },
+      "pregnancy_weeks": "Javët e Shtatzënisë",
+      "baby_weight": "Pesha e Fëmijës (gramë)",
+      "baby_gender": "Gjinia e Fëmijës",
+      "gender": {
+        "male": "Mashkull",
+        "female": "Femër"
+      },
+      "complications": "Komplikacione",
+      "notes": "Shënime",
+      "no_deliveries": "Nuk ka lindje të regjistruara",
+      "delete_confirm": "Jeni i sigurt që dëshironi të fshini këtë lindje?"
+    },
+    "tabs": {
+      "info": "Informacione",
+      "reports": "Raportet",
+      "invoices": "Faturat",
+      "timeline": "Kronologjia"
+    },
+    "privacy": {
+      "consent": "Pëlqimi për Përpunimin e të Dhënave",
+      "marketing": "Pëlqimi për Marketing",
+      "consent_required": "Pëlqimi për përpunimin e të dhënave është i detyrueshëm"
+    },
+    "messages": {
+      "created": "Pacienti u krijua me sukses",
+      "updated": "Pacienti u përditësua me sukses",
+      "deleted": "Pacienti u fshi me sukses",
+      "delivery_created": "Lindja u shtua me sukses",
+      "delivery_updated": "Lindja u përditësua me sukses",
+      "delivery_deleted": "Lindja u fshi me sukses",
+      "error_save": "Gabim gjatë ruajtjes",
+      "error_load": "Gabim gjatë ngarkimit",
+      "error_delete": "Gabim gjatë fshirjes"
+    }
+  },
+  "report": {
+    "title": "Raportet Mjekësore",
+    "new_report": "Raport i Ri",
+    "edit_report": "Ndrysho Raportin",
+    "report_number": "Numri i Raportit",
+    "report_date": "Data e Ekzaminimit",
+    "visit_type": "Lloji i Vizitës",
+    "coming_soon": "Menaxhimi i raporteve së shpejti",
+    "visit_types": {
+      "checkup": "Vizitë Kontrolli",
+      "ultrasound": "Ekografia",
+      "pap_test": "PAP Test",
+      "mammography": "Mamografia",
+      "pregnancy": "Vizitë Shtatzënie",
+      "postpartum": "Vizitë Pas Lindjes",
+      "consultation": "Konsultim",
+      "other": "Tjetër"
+    },
+    "sections": {
+      "patient_summary": "Përmbledhje Pacienti",
+      "examination": "Ekzaminimi Objektiv",
+      "ultrasound_result": "Rezultati i Ekografisë",
+      "therapy": "Terapia e Rekomanduar",
+      "attachments": "Bashkëngjitjet",
+      "internal_notes": "Shënime të Brendshme",
+      "report_header": "Koka e Raportit"
+    },
+    "fields": {
+      "examination_placeholder": "Përshkruani çfarë keni bërë/kontrolluar gjatë vizitës (p.sh., ekzaminimi pelvik, vlerësimi i mitrës, matja e TA...)",
+      "ultrasound_placeholder": "Nëse është kryer ekografi, shkruani llojin, rezultatet dhe matjet",
+      "therapy_placeholder": "Përshkrimet, dozat, kontrollet për t'u kryer"
+    },
+    "actions": {
+      "preview_pdf": "Pamja Paraprake PDF",
+      "download_pdf": "Shkarko PDF"
+    },
+    "messages": {
+      "created": "Raporti u krijua me sukses",
+      "updated": "Raporti u përditësua me sukses",
+      "deleted": "Raporti u fshi me sukses",
+      "error_save": "Gabim gjatë ruajtjes së raportit",
+      "error_load": "Gabim gjatë ngarkimit të raportit"
+    }
+  },
+  "invoice": {
+    "title": "Faturat",
+    "new_invoice": "Faturë e Re",
+    "edit_invoice": "Ndrysho Faturën",
+    "invoice_number": "Numri i Faturës",
+    "invoice_date": "Data e Lëshimit",
+    "due_date": "Data e Skadencës",
+    "amount": "Shuma",
+    "vat": "TVSH",
+    "total": "Totali",
+    "payment_method": "Metoda e Pagesës",
+    "payment_status": "Statusi i Pagesës",
+    "payment_date": "Data e Pagesës",
+    "notes": "Shënime",
+    "coming_soon": "Menaxhimi i faturave së shpejti",
+    "payment_methods": {
+      "cash": "Para në Dorë",
+      "card": "Kartë",
+      "bank_transfer": "Transfertë Bankare",
+      "check": "Çek"
+    },
+    "status": {
+      "paid": "Paguar",
+      "pending": "Në Pritje",
+      "cancelled": "Anuluar",
+      "overdue": "Vonuar"
+    },
+    "items": {
+      "title": "Artikujt e Faturës",
+      "description": "Përshkrimi",
+      "quantity": "Sasia",
+      "unit_price": "Çmimi për Njësi",
+      "total": "Totali",
+      "add_item": "Shto Artikull"
+    },
+    "messages": {
+      "created": "Fatura u krijua me sukses",
+      "updated": "Fatura u përditësua me sukses",
+      "deleted": "Fatura u fshi me sukses",
+      "error_save": "Gabim gjatë ruajtjes së faturës",
+      "error_load": "Gabim gjatë ngarkimit të faturës"
+    }
+  },
+  "settings": {
+    "title": "Cilësimet",
+    "studio_info": "Informacione mbi Studion",
+    "coming_soon": "Cilësimet së shpejti"
+  },
+  "dashboard": {
+    "stats": {
+      "patients": "Pazienti Totali",
+      "reports": "Referti",
+      "invoices": "Fatture",
+      "appointments_today": "Appuntamenti Oggi"
+    }
+  }
+}

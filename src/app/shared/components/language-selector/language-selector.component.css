@@ -1,0 +1,28 @@
+.language-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.flag {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.language-code {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.active {
+  background-color: rgba(0, 137, 123, 0.08);
+}
+
+.check-icon {
+  margin-left: auto;
+  color: #00897b;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}

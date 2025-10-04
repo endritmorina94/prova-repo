@@ -1,0 +1,111 @@
+<div class="settings-container">
+  <h1>{{ 'settings.title' | translate }}</h1>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  @if (!loading()) {
+    <form (ngSubmit)="onSubmit()" [formGroup]="settingsForm">
+
+      <!-- Info Studio -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>business</mat-icon>
+            Informazioni Studio
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nome Studio *</mat-label>
+              <input formControlName="name" matInput>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Partita IVA</mat-label>
+              <input formControlName="vatNumber" matInput>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Telefono</mat-label>
+              <input formControlName="phone" matInput>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email</mat-label>
+              <input formControlName="email" matInput type="email">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Indirizzo</mat-label>
+              <input formControlName="address" matInput>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Città</mat-label>
+              <input formControlName="city" matInput>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>CAP</mat-label>
+              <input formControlName="postalCode" matInput>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Provincia</mat-label>
+              <input formControlName="province" matInput maxlength="2">
+            </mat-form-field>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Info Medico -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>medical_services</mat-icon>
+            Informazioni Medico
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nome Medico</mat-label>
+              <input formControlName="doctorName" matInput placeholder="Dr.ssa Maria Rossi">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Titolo/Specializzazione</mat-label>
+              <input formControlName="doctorTitle" matInput placeholder="Specialista in Ginecologia e Ostetricia">
+            </mat-form-field>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button
+          [disabled]="saving()"
+          color="primary"
+          mat-raised-button
+          type="submit">
+          @if (saving()) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <mat-icon>save</mat-icon>
+          }
+          {{ 'common.save' | translate }}
+        </button>
+      </div>
+
+    </form>
+  }
+</div>

@@ -1,0 +1,373 @@
+.patient-detail-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 64px 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-info {
+  flex: 1;
+}
+
+.header-info h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #212121;
+}
+
+.header-info .subtitle {
+  margin: 4px 0 0;
+  color: #757575;
+  font-size: 14px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-content {
+  padding: 24px 0;
+}
+
+mat-card {
+  margin-bottom: 24px;
+}
+
+mat-card:last-child {
+  margin-bottom: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  padding: 16px 0;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-item .label {
+  font-size: 12px;
+  color: #757575;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item .value {
+  font-size: 15px;
+  color: #212121;
+}
+
+.deliveries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.delivery-item {
+  padding: 16px 0;
+}
+
+.delivery-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.delivery-header mat-icon {
+  color: #00897b;
+}
+
+.delivery-header strong {
+  font-size: 16px;
+  color: #212121;
+}
+
+.delivery-header mat-chip {
+  font-size: 12px;
+}
+
+.delivery-details {
+  display: flex;
+  gap: 16px;
+  margin-left: 36px;
+  color: #616161;
+  font-size: 14px;
+}
+
+.delivery-details span:not(:last-child)::after {
+  content: "•";
+  margin-left: 16px;
+  color: #bdbdbd;
+}
+
+.delivery-notes {
+  margin-left: 36px;
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.delivery-notes p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #424242;
+}
+
+.delivery-notes p:last-child {
+  margin-bottom: 0;
+}
+
+.empty-message {
+  color: #9e9e9e;
+  font-style: italic;
+  text-align: center;
+  padding: 32px 0;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 32px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #bdbdbd;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  color: #9e9e9e;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .header-actions button {
+    flex: 1;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .delivery-details {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .delivery-details span:not(:last-child)::after {
+    display: none;
+  }
+}
+
+mat-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-delivery-button {
+  margin-left: auto;
+}
+
+.delivery-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.delivery-header mat-icon {
+  color: #00897b;
+}
+
+.delivery-header strong {
+  font-size: 16px;
+  color: #212121;
+  flex: 1;
+}
+
+.delivery-header mat-chip {
+  font-size: 12px;
+}
+
+.delivery-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.delivery-actions button {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.delivery-actions button mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #616161;
+}
+
+.delivery-actions button[color="warn"] mat-icon {
+  color: #f44336;
+}
+
+.empty-message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0;
+}
+
+.empty-message-container .empty-message {
+  margin: 0;
+}
+
+/* Reports list */
+.reports-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.report-item {
+  padding: 16px 0;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-header mat-icon {
+  color: #1976d2;
+}
+
+.report-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report-info strong {
+  font-size: 15px;
+  color: #212121;
+}
+
+.report-meta {
+  font-size: 13px;
+  color: #757575;
+}
+
+.report-preview {
+  margin-left: 36px;
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #616161;
+  line-height: 1.5;
+}
+
+.report-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Invoices list */
+.invoices-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.invoice-item {
+  padding: 16px 0;
+}
+
+.invoice-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invoice-header mat-icon {
+  color: #f57c00;
+}
+
+.invoice-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.invoice-info strong {
+  font-size: 15px;
+  color: #212121;
+}
+
+.invoice-meta {
+  font-size: 13px;
+  color: #757575;
+}
+
+.invoice-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #00897b;
+  margin-right: 16px;
+}
+
+.invoice-actions {
+  display: flex;
+  gap: 4px;
+}

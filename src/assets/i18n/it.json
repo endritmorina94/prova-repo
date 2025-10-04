@@ -1,0 +1,219 @@
+{
+  "app": {
+    "title": "Gestionale Ginecologico",
+    "language": "Lingua"
+  },
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "search": "Cerca",
+    "add": "Aggiungi",
+    "back": "Indietro",
+    "confirm": "Conferma",
+    "close": "Chiudi",
+    "actions": "Azioni",
+    "loading": "Caricamento...",
+    "no_data": "Nessun dato disponibile",
+    "error": "Errore",
+    "success": "Operazione completata con successo",
+    "view": "Visualizza",
+    "coming_soon": "Disponibile prossimamente",
+    "years": "anni"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "patients": "Pazienti",
+    "reports": "Referti",
+    "invoices": "Fatture",
+    "appointments": "Appuntamenti",
+    "settings": "Impostazioni"
+  },
+  "patient": {
+    "title": "Pazienti",
+    "add_patient": "Aggiungi Paziente",
+    "edit_patient": "Modifica Paziente",
+    "patient_details": "Dettaglio Paziente",
+    "search_placeholder": "Cerca per nome, cognome o codice fiscale...",
+    "fields": {
+      "first_name": "Nome",
+      "last_name": "Cognome",
+      "birth_date": "Data di Nascita",
+      "birth_place": "Luogo di Nascita",
+      "fiscal_code": "Codice Fiscale",
+      "phone": "Telefono",
+      "mobile": "Cellulare",
+      "email": "Email",
+      "address": "Indirizzo",
+      "city": "Città",
+      "postal_code": "CAP",
+      "province": "Provincia",
+      "country": "Paese",
+      "blood_type": "Gruppo Sanguigno",
+      "allergies": "Allergie",
+      "current_medications": "Farmaci Attuali",
+      "medical_notes": "Note Mediche",
+      "family_medical_history": "Anamnesi Familiare",
+      "first_menstruation_age": "Età Primo Ciclo",
+      "menstrual_cycle_days": "Durata Ciclo (giorni)",
+      "last_menstruation_date": "Data Ultima Mestruazione",
+      "contraception_method": "Metodo Contraccettivo",
+      "pap_test_last_date": "Data Ultimo PAP Test",
+      "mammography_last_date": "Data Ultima Mammografia"
+    },
+    "sections": {
+      "personal_data": "Dati Anagrafici",
+      "contacts": "Contatti",
+      "medical_data": "Dati Medici Generali",
+      "gynecological_data": "Dati Ginecologici",
+      "deliveries": "Storico Parti",
+      "privacy": "Consensi Privacy"
+    },
+    "deliveries": {
+      "title": "Storico Parti",
+      "add_delivery": "Aggiungi Parto",
+      "edit_delivery": "Modifica Parto",
+      "delivery_date": "Data Parto",
+      "delivery_type": "Tipo Parto",
+      "types": {
+        "natural": "Naturale",
+        "cesarean": "Cesareo",
+        "assisted": "Assistito (ventosa/forcipe)"
+      },
+      "pregnancy_weeks": "Settimane di Gravidanza",
+      "baby_weight": "Peso Bambino (grammi)",
+      "baby_gender": "Sesso Bambino",
+      "gender": {
+        "male": "Maschio",
+        "female": "Femmina"
+      },
+      "complications": "Complicazioni",
+      "notes": "Note",
+      "no_deliveries": "Nessun parto registrato",
+      "delete_confirm": "Sei sicuro di voler eliminare questo parto?"
+    },
+    "tabs": {
+      "info": "Informazioni",
+      "reports": "Referti",
+      "invoices": "Fatture",
+      "timeline": "Timeline"
+    },
+    "privacy": {
+      "consent": "Consenso Trattamento Dati Personali",
+      "marketing": "Consenso Marketing",
+      "consent_required": "Il consenso al trattamento dati è obbligatorio"
+    },
+    "messages": {
+      "created": "Paziente creato con successo",
+      "updated": "Paziente aggiornato con successo",
+      "deleted": "Paziente eliminato con successo",
+      "delivery_created": "Parto aggiunto con successo",
+      "delivery_updated": "Parto aggiornato con successo",
+      "delivery_deleted": "Parto eliminato con successo",
+      "error_save": "Errore durante il salvataggio",
+      "error_load": "Errore durante il caricamento",
+      "error_delete": "Errore durante l'eliminazione"
+    }
+  },
+  "report": {
+    "title": "Referti",
+    "new_report": "Nuovo Referto",
+    "edit_report": "Modifica Referto",
+    "report_number": "Numero Referto",
+    "report_date": "Data Esame",
+    "visit_type": "Tipo Visita",
+    "coming_soon": "Gestione referti disponibile prossimamente",
+    "visit_types": {
+      "checkup": "Visita Controllo",
+      "ultrasound": "Ecografia",
+      "pap_test": "PAP Test",
+      "mammography": "Mammografia",
+      "pregnancy": "Visita Gravidanza",
+      "postpartum": "Visita Post-Parto",
+      "consultation": "Consulto",
+      "other": "Altro"
+    },
+    "sections": {
+      "patient_summary": "Resoconto Paziente",
+      "examination": "Esame Obiettivo",
+      "ultrasound_result": "Risultato Ecografia",
+      "therapy": "Terapia Consigliata",
+      "attachments": "Allegati",
+      "internal_notes": "Note Interne",
+      "report_header": "Intestazione Referto"
+    },
+    "fields": {
+      "examination_placeholder": "Descrivi cosa hai fatto/controllato durante la visita (es: esame pelvico, valutazione utero, misurazione PA...)",
+      "ultrasound_placeholder": "Se è stata effettuata ecografia, scrivi tipologia, risultati e misurazioni",
+      "therapy_placeholder": "Prescrizioni farmacologiche, dosaggi, controlli da effettuare"
+    },
+    "actions": {
+      "preview_pdf": "Anteprima PDF",
+      "download_pdf": "Scarica PDF"
+    },
+    "messages": {
+      "created": "Referto creato con successo",
+      "updated": "Referto aggiornato con successo",
+      "deleted": "Referto eliminato con successo",
+      "error_save": "Errore durante il salvataggio del referto",
+      "error_load": "Errore durante il caricamento del referto"
+    }
+  },
+  "invoice": {
+    "title": "Fatture",
+    "new_invoice": "Nuova Fattura",
+    "edit_invoice": "Modifica Fattura",
+    "invoice_number": "Numero Fattura",
+    "invoice_date": "Data Emissione",
+    "due_date": "Data Scadenza",
+    "amount": "Importo",
+    "vat": "IVA",
+    "total": "Totale",
+    "payment_method": "Metodo Pagamento",
+    "payment_status": "Stato Pagamento",
+    "payment_date": "Data Pagamento",
+    "notes": "Note",
+    "coming_soon": "Gestione fatture disponibile prossimamente",
+    "payment_methods": {
+      "cash": "Contanti",
+      "card": "Carta",
+      "bank_transfer": "Bonifico Bancario",
+      "check": "Assegno"
+    },
+    "status": {
+      "paid": "Pagata",
+      "pending": "Da Pagare",
+      "cancelled": "Annullata",
+      "overdue": "Scaduta"
+    },
+    "items": {
+      "title": "Voci Fattura",
+      "description": "Descrizione",
+      "quantity": "Quantità",
+      "unit_price": "Prezzo Unitario",
+      "total": "Totale",
+      "add_item": "Aggiungi Voce"
+    },
+    "messages": {
+      "created": "Fattura creata con successo",
+      "updated": "Fattura aggiornata con successo",
+      "deleted": "Fattura eliminata con successo",
+      "error_save": "Errore durante il salvataggio della fattura",
+      "error_load": "Errore durante il caricamento della fattura"
+    }
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "studio_info": "Informazioni Studio",
+    "coming_soon": "Impostazioni disponibili prossimamente"
+  },
+  "dashboard": {
+    "stats": {
+      "patients": "Pazienti Totali",
+      "reports": "Referti",
+      "invoices": "Fatture",
+      "appointments_today": "Appuntamenti Oggi"
+    }
+  }
+}

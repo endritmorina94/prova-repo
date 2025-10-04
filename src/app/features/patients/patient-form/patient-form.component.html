@@ -1,0 +1,309 @@
+<div class="patient-form-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>
+      @if (isEditMode()) {
+      {{ 'patient.edit_patient' | translate }}
+      } @else {
+      {{ 'patient.add_patient' | translate }}
+      }
+    </h1>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+  <div class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+  }
+
+  <!-- Form -->
+  @if (!loading()) {
+  <form [formGroup]="patientForm" (ngSubmit)="onSubmit()">
+
+    <mat-tab-group>
+
+      <!-- TAB 1: Dati Anagrafici -->
+      <mat-tab [label]="'patient.sections.personal_data' | translate">
+        <div class="tab-content">
+          <mat-card>
+            <mat-card-content>
+              <div class="form-grid">
+
+                <!-- Nome -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'patient.fields.first_name' | translate }} *</mat-label>
+                    <input matInput formControlName="firstName">
+                    @if (patientForm.get('firstName')?.invalid && patientForm.get('firstName')?.touched) {
+  <mat-error>{{ getErrorMessage('firstName') }}</mat-error>
+  }
+  </mat-form-field>
+
+  <!-- Cognome -->
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'patient.fields.last_name' | translate }} *</mat-label>
+                    <input matInput formControlName="lastName">
+                    @if (patientForm.get('lastName')?.invalid && patientForm.get('lastName')?.touched) {
+  <mat-error>{{ getErrorMessage('lastName') }}</mat-error>
+  }
+  </mat-form-field>
+
+  <!-- Data di Nascita -->
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'patient.fields.birth_date' | translate }} *</mat-label>
+                    <input matInput [matDatepicker]="birthDatePicker" formControlName="birthDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="birthDatePicker"></mat-datepicker-toggle>
+                    <mat-datepicker #birthDatePicker></mat-datepicker>
+                    @if (patientForm.get('birthDate')?.invalid && patientForm.get('birthDate')?.touched) {
+  <mat-error>{{ getErrorMessage('birthDate') }}</mat-error>
+  }
+  </mat-form-field>
+
+  <!-- Luogo di Nascita -->
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'patient.fields.birth_place' | translate }}</mat-label>
+                    <input matInput formControlName="birthPlace">
+                  </mat-form-field>
+
+                  <!-- Codice Fiscale -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.fiscal_code' | translate }}</mat-label>
+                    <input matInput formControlName="fiscalCode" maxlength="16">
+                  </mat-form-field>
+
+                  <!-- Paese -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.country' | translate }}</mat-label>
+                    <input matInput formControlName="country">
+                  </mat-form-field>
+
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+
+        <!-- TAB 2: Contatti -->
+        <mat-tab [label]="'patient.sections.contacts' | translate">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-content>
+                <div class="form-grid">
+
+                  <!-- Telefono -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.phone' | translate }}</mat-label>
+                    <input matInput formControlName="phone" type="tel">
+                    <mat-icon matPrefix>phone</mat-icon>
+                  </mat-form-field>
+
+                  <!-- Cellulare -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.mobile' | translate }}</mat-label>
+                    <input matInput formControlName="mobile" type="tel">
+                    <mat-icon matPrefix>smartphone</mat-icon>
+                  </mat-form-field>
+
+                  <!-- Email -->
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'patient.fields.email' | translate }}</mat-label>
+                    <input matInput formControlName="email" type="email">
+                    <mat-icon matPrefix>email</mat-icon>
+                    @if (patientForm.get('email')?.invalid && patientForm.get('email')?.touched) {
+  <mat-error>{{ getErrorMessage('email') }}</mat-error>
+  }
+  </mat-form-field>
+
+  <!-- Indirizzo -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'patient.fields.address' | translate }}</mat-label>
+                    <input matInput formControlName="address">
+                    <mat-icon matPrefix>home</mat-icon>
+                  </mat-form-field>
+
+                  <!-- Città -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.city' | translate }}</mat-label>
+                    <input matInput formControlName="city">
+                  </mat-form-field>
+
+                  <!-- CAP -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.postal_code' | translate }}</mat-label>
+                    <input matInput formControlName="postalCode">
+                  </mat-form-field>
+
+                  <!-- Provincia -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.province' | translate }}</mat-label>
+                    <input matInput formControlName="province" maxlength="2">
+                  </mat-form-field>
+
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+
+        <!-- TAB 3: Dati Medici -->
+        <mat-tab [label]="'patient.sections.medical_data' | translate">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-content>
+                <div class="form-grid">
+
+                  <!-- Gruppo Sanguigno -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.blood_type' | translate }}</mat-label>
+                    <mat-select formControlName="bloodType">
+                      @for (type of bloodTypes; track type) {
+  <mat-option [value]="type">{{ type }}</mat-option>
+  }
+  </mat-select>
+</mat-form-field>
+
+<div></div> <!-- Spacer -->
+
+<!-- Allergie -->
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>{{ 'patient.fields.allergies' | translate }}</mat-label>
+                    <textarea matInput formControlName="allergies" rows="3"></textarea>
+                  </mat-form-field>
+
+                  <!-- Farmaci Attuali -->
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'patient.fields.current_medications' | translate }}</mat-label>
+                    <textarea matInput formControlName="currentMedications" rows="3"></textarea>
+                  </mat-form-field>
+
+                  <!-- Note Mediche -->
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'patient.fields.medical_notes' | translate }}</mat-label>
+                    <textarea matInput formControlName="medicalNotes" rows="3"></textarea>
+                  </mat-form-field>
+
+                  <!-- Anamnesi Familiare -->
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>{{ 'patient.fields.family_medical_history' | translate }}</mat-label>
+                    <textarea matInput formControlName="familyMedicalHistory" rows="3"></textarea>
+                  </mat-form-field>
+
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+
+        <!-- TAB 4: Dati Ginecologici -->
+        <mat-tab [label]="'patient.sections.gynecological_data' | translate">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-content>
+                <div class="form-grid">
+
+                  <!-- Età Primo Ciclo -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.first_menstruation_age' | translate }}</mat-label>
+                    <input matInput formControlName="firstMenstruationAge" type="number" min="8" max="20">
+                  </mat-form-field>
+
+                  <!-- Durata Ciclo -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.menstrual_cycle_days' | translate }}</mat-label>
+                    <input matInput formControlName="menstrualCycleDays" type="number" min="20" max="40">
+                  </mat-form-field>
+
+                  <!-- Data Ultima Mestruazione -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.last_menstruation_date' | translate }}</mat-label>
+                    <input matInput [matDatepicker]="lastMenstruationPicker" formControlName="lastMenstruationDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="lastMenstruationPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #lastMenstruationPicker></mat-datepicker>
+                  </mat-form-field>
+
+                  <!-- Metodo Contraccettivo -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.contraception_method' | translate }}</mat-label>
+                    <mat-select formControlName="contraceptionMethod">
+                      @for (method of contraceptionMethods; track method) {
+  <mat-option [value]="method">{{ method }}</mat-option>
+  }
+  </mat-select>
+</mat-form-field>
+
+<!-- Data Ultimo PAP Test -->
+<mat-form-field appearance="outline">
+  <mat-label>{{ 'patient.fields.pap_test_last_date' | translate }}</mat-label>
+                    <input matInput [matDatepicker]="papTestPicker" formControlName="papTestLastDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="papTestPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #papTestPicker></mat-datepicker>
+                  </mat-form-field>
+
+                  <!-- Data Ultima Mammografia -->
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'patient.fields.mammography_last_date' | translate }}</mat-label>
+                    <input matInput [matDatepicker]="mammographyPicker" formControlName="mammographyLastDate">
+                    <mat-datepicker-toggle matIconSuffix [for]="mammographyPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #mammographyPicker></mat-datepicker>
+                  </mat-form-field>
+
+                </div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-tab>
+
+        <!-- TAB 5: Consensi -->
+        <mat-tab [label]="'patient.sections.privacy' | translate">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-content>
+                <div class="consent-section">
+
+                  <mat-checkbox formControlName="privacyConsent" color="primary">
+  {{ 'patient.privacy.consent' | translate }} *
+                  </mat-checkbox>
+
+                  <mat-checkbox formControlName="marketingConsent" color="primary">
+  {{ 'patient.privacy.marketing' | translate }}
+  </mat-checkbox>
+
+  @if (patientForm.get('privacyConsent')?.invalid && patientForm.get('privacyConsent')?.touched) {
+  <p class="error-text">Il consenso al trattamento dati è obbligatorio</p>
+  }
+
+  </div>
+</mat-card-content>
+</mat-card>
+</div>
+</mat-tab>
+
+</mat-tab-group>
+
+<!-- Actions -->
+<div class="form-actions">
+<button
+mat-button
+type="button"
+(click)="onCancel()"
+[disabled]="saving()">
+  {{ 'common.cancel' | translate }}
+  </button>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="saving()">
+    @if (saving()) {
+  <mat-spinner diameter="20"></mat-spinner>
+  } @else {
+  <mat-icon>save</mat-icon>
+  }
+  {{ 'common.save' | translate }}
+  </button>
+</div>
+
+</form>
+  }
+</div>

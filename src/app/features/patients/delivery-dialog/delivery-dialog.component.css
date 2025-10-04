@@ -1,0 +1,22 @@
+.delivery-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  min-width: 500px;
+  padding: 16px 0;
+}
+
+.delivery-form .full-width {
+  grid-column: 1 / -1;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .delivery-form {
+    grid-template-columns: 1fr;
+    min-width: auto;
+  }
+}

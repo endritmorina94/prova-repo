@@ -1,0 +1,107 @@
+<div class="patient-list-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>{{ 'patient.title' | translate }}</h1>
+    <button
+      color="primary"
+      mat-raised-button
+      routerLink="/patients/new">
+      <mat-icon>add</mat-icon>
+      {{ 'patient.add_patient' | translate }}
+    </button>
+  </div>
+
+  <!-- Barra di ricerca -->
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>{{ 'patient.search_placeholder' | translate }}</mat-label>
+      <input
+        (keyup)="applyFilter($event)"
+        matInput
+        type="text">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Loading spinner -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Tabella pazienti -->
+  @if (!loading()) {
+    <mat-card class="table-card">
+      <table [dataSource]="dataSource" class="patients-table" mat-table>
+
+        <!-- Colonna Nome -->
+        <ng-container matColumnDef="name">
+          <th *matHeaderCellDef mat-header-cell>
+            {{ 'patient.fields.first_name' | translate }} / {{ 'patient.fields.last_name' | translate }}
+          </th>
+          <td *matCellDef="let patient" mat-cell>
+            <div class="patient-name">
+              <strong>{{ patient.lastName }} {{ patient.firstName }}</strong>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Colonna Data di Nascita -->
+        <ng-container matColumnDef="birthDate">
+          <th *matHeaderCellDef mat-header-cell>{{ 'patient.fields.birth_date' | translate }}</th>
+          <td *matCellDef="let patient" mat-cell>
+            {{ formatDate(patient.birthDate) }}
+            <span class="age-badge">({{ calculateAge(patient.birthDate) }} anni)</span>
+          </td>
+        </ng-container>
+
+        <!-- Colonna Codice Fiscale -->
+        <ng-container matColumnDef="fiscalCode">
+          <th *matHeaderCellDef mat-header-cell>{{ 'patient.fields.fiscal_code' | translate }}</th>
+          <td *matCellDef="let patient" mat-cell>{{ patient.fiscalCode || '-' }}</td>
+        </ng-container>
+
+        <!-- Colonna Telefono -->
+        <ng-container matColumnDef="phone">
+          <th *matHeaderCellDef mat-header-cell>{{ 'patient.fields.mobile' | translate }}</th>
+          <td *matCellDef="let patient" mat-cell>{{ patient.mobile || patient.phone || '-' }}</td>
+        </ng-container>
+
+        <!-- Colonna Azioni -->
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell>{{ 'common.actions' | translate }}</th>
+          <td *matCellDef="let patient" mat-cell>
+            <button
+              [routerLink]="['/patients', patient.id]"
+              mat-icon-button
+              matTooltip="Visualizza dettagli">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button
+              [routerLink]="['/patients', patient.id, 'edit']"
+              mat-icon-button
+              matTooltip="Modifica">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr
+          *matRowDef="let row; columns: displayedColumns;"
+          [routerLink]="['/patients', row.id]"
+          class="patient-row"
+          mat-row></tr>
+      </table>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [length]="dataSource.data.length"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        [pageSize]="10"
+        [showFirstLastButtons]="true">
+      </mat-paginator>
+    </mat-card>
+  }
+</div>

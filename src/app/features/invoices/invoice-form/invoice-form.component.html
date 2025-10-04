@@ -1,0 +1,281 @@
+<div class="invoice-form-container">
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading() && patient()) {
+
+    <!-- Header -->
+    <div class="header">
+      <button (click)="onCancel()" mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-info">
+        <h1>{{ 'invoice.new_invoice' | translate }}</h1>
+        <p class="subtitle">
+          {{ patient()!.firstName }} {{ patient()!.lastName }}
+        </p>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="invoiceForm">
+
+      <!-- Intestazione Fattura -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ 'invoice.invoice_number' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+
+            <!-- Numero Fattura (read-only) -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'invoice.invoice_number' | translate }}</mat-label>
+              <input [value]="invoiceNumber()" matInput readonly>
+              <mat-icon matPrefix>receipt</mat-icon>
+            </mat-form-field>
+
+            <!-- Data Emissione -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'invoice.invoice_date' | translate }} *</mat-label>
+              <input [matDatepicker]="invoiceDatePicker" formControlName="invoiceDate" matInput>
+              <mat-datepicker-toggle [for]="invoiceDatePicker" matIconSuffix></mat-datepicker-toggle>
+              <mat-datepicker #invoiceDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Data Scadenza -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'invoice.due_date' | translate }}</mat-label>
+              <input [matDatepicker]="dueDatePicker" formControlName="dueDate" matInput>
+              <mat-datepicker-toggle [for]="dueDatePicker" matIconSuffix></mat-datepicker-toggle>
+              <mat-datepicker #dueDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Stato Pagamento -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'invoice.payment_status' | translate }} *</mat-label>
+              <mat-select formControlName="paymentStatus">
+                @for (status of paymentStatuses; track status) {
+                  <mat-option [value]="status">
+                    {{ 'invoice.status.' + status | translate }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-divider></mat-divider>
+
+      <!-- Voci Fattura -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>list</mat-icon>
+            {{ 'invoice.items.title' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+
+          @for (item of items.controls; track $index; let i = $index) {
+            <div [formGroup]="$any(item)" class="invoice-item">
+
+              <div class="item-header">
+                <span class="item-number">{{ i + 1 }}.</span>
+                @if (items.length > 1) {
+                  <button
+                    (click)="removeItem(i)"
+                    class="remove-item-btn"
+                    color="warn"
+                    mat-icon-button
+                    type="button">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                }
+              </div>
+
+              <div class="item-grid">
+
+                <!-- Descrizione -->
+                <mat-form-field appearance="outline" class="description-field">
+                  <mat-label>{{ 'invoice.items.description' | translate }} *</mat-label>
+                  <input formControlName="description" matInput>
+                </mat-form-field>
+
+                <!-- Quantità -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'invoice.items.quantity' | translate }} *</mat-label>
+                  <input
+                    (change)="recalculateAmount()"
+                    formControlName="quantity"
+                    matInput
+                    type="number">
+                </mat-form-field>
+
+                <!-- Prezzo Unitario -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'invoice.items.unit_price' | translate }} *</mat-label>
+                  <input
+                    (change)="recalculateAmount()"
+                    formControlName="unitPrice"
+                    matInput
+                    type="number">
+                  <span matTextSuffix>€</span>
+                </mat-form-field>
+
+                <!-- Totale Item (read-only) -->
+                <mat-form-field appearance="outline">
+                  <mat-label>{{ 'invoice.items.total' | translate }}</mat-label>
+                  <input [value]="getItemTotal(i) | number:'1.2-2'" matInput readonly>
+                  <span matTextSuffix>€</span>
+                </mat-form-field>
+
+              </div>
+            </div>
+
+            @if (i < items.length - 1) {
+              <mat-divider></mat-divider>
+            }
+          }
+
+          <button
+            (click)="addItem()"
+            class="add-item-btn"
+            color="primary"
+            mat-button
+            type="button">
+            <mat-icon>add</mat-icon>
+            {{ 'invoice.items.add_item' | translate }}
+          </button>
+
+        </mat-card-content>
+      </mat-card>
+
+      <mat-divider></mat-divider>
+
+      <!-- Totali -->
+      <mat-card>
+        <mat-card-content>
+          <div class="totals-section">
+
+            <!-- Importo -->
+            <div class="total-row">
+              <span class="total-label">{{ 'invoice.amount' | translate }}:</span>
+              <span class="total-value">{{ invoiceForm.get('amount')?.value | number:'1.2-2' }} €</span>
+            </div>
+
+            <!-- IVA Rate -->
+            <div class="total-row">
+              <mat-form-field appearance="outline" class="vat-field">
+                <mat-label>{{ 'invoice.vat' | translate }} %</mat-label>
+                <input formControlName="vatRate" matInput max="100" min="0" type="number">
+                <span matTextSuffix>%</span>
+              </mat-form-field>
+            </div>
+
+            <!-- IVA Amount -->
+            <div class="total-row">
+              <span class="total-label">{{ 'invoice.vat' | translate }}:</span>
+              <span class="total-value">{{ calculatedVatAmount() | number:'1.2-2' }} €</span>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Totale -->
+            <div class="total-row grand-total">
+              <span class="total-label">{{ 'invoice.total' | translate }}:</span>
+              <span class="total-value">{{ calculatedTotal() | number:'1.2-2' }} €</span>
+            </div>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-divider></mat-divider>
+
+      <!-- Pagamento -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>payment</mat-icon>
+            {{ 'invoice.payment_method' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+
+            <!-- Metodo Pagamento -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'invoice.payment_method' | translate }}</mat-label>
+              <mat-select formControlName="paymentMethod">
+                @for (method of paymentMethods; track method) {
+                  <mat-option [value]="method">
+                    {{ 'invoice.payment_methods.' + method | translate }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Data Pagamento -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'invoice.payment_date' | translate }}</mat-label>
+              <input [matDatepicker]="paymentDatePicker" formControlName="paymentDate" matInput>
+              <mat-datepicker-toggle [for]="paymentDatePicker" matIconSuffix></mat-datepicker-toggle>
+              <mat-datepicker #paymentDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Note -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'invoice.notes' | translate }}</mat-label>
+              <textarea formControlName="notes" matInput rows="3"></textarea>
+            </mat-form-field>
+
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button
+          (click)="onCancel()"
+          [disabled]="saving()"
+          mat-button
+          type="button">
+          {{ 'common.cancel' | translate }}
+        </button>
+
+        <div class="action-buttons-right">
+          <button
+            (click)="previewPDF()"
+            [disabled]="saving()"
+            mat-button
+            type="button">
+            <mat-icon>picture_as_pdf</mat-icon>
+            Anteprima PDF
+          </button>
+
+          <button
+            [disabled]="saving()"
+            color="primary"
+            mat-raised-button
+            type="submit">
+            @if (saving()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              <mat-icon>save</mat-icon>
+            }
+            {{ 'common.save' | translate }}
+          </button>
+        </div>
+      </div>
+
+    </form>
+  }
+</div>

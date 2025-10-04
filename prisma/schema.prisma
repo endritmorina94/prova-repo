@@ -1,0 +1,256 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// FASE 1: Tabelle MVP
+// ============================================
+
+/// Studio medico (pronto per multi-tenant in Fase 4)
+model Studio {
+  id                    String   @id @default(uuid())
+  name                  String
+  vatNumber             String?  @map("vat_number")
+  address               String?
+  phone                 String?
+  email                 String?
+  logoUrl               String?  @map("logo_url")
+  doctorName            String?  @map("doctor_name")
+  doctorTitle           String?  @map("doctor_title")
+  doctorSignaturePath   String?  @map("doctor_signature_path")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  patients      Patient[]
+  reports       Report[]
+  invoices      Invoice[]
+  deliveries    Delivery[]
+  appointments  Appointment[]
+
+  @@map("studios")
+}
+
+/// Pazienti con campi completi ginecologici
+model Patient {
+  id        String   @id @default(uuid())
+  studioId  String   @map("studio_id")
+
+  // Dati Anagrafici Base
+  firstName           String   @map("first_name")
+  lastName            String   @map("last_name")
+  birthDate           DateTime @map("birth_date") @db.Date
+  birthPlace          String?  @map("birth_place")
+  fiscalCode          String?  @unique @map("fiscal_code")
+  phone               String?
+  mobile              String?
+  email               String?
+  address             String?
+  city                String?
+  postalCode          String?  @map("postal_code")
+  province            String?
+  country             String   @default("Italia")
+
+  // Dati Medici Base
+  bloodType             String? @map("blood_type")
+  allergies             String?
+  currentMedications    String? @map("current_medications")
+  medicalNotes          String? @map("medical_notes")
+  familyMedicalHistory  String? @map("family_medical_history")
+
+  // Dati Ginecologici Specifici
+  firstMenstruationAge  Int?     @map("first_menstruation_age")
+  menstrualCycleDays    Int?     @map("menstrual_cycle_days")
+  lastMenstruationDate  DateTime? @map("last_menstruation_date") @db.Date
+  contraceptionMethod   String?  @map("contraception_method")
+  papTestLastDate       DateTime? @map("pap_test_last_date") @db.Date
+  mammographyLastDate   DateTime? @map("mammography_last_date") @db.Date
+
+  // Consensi Privacy
+  privacyConsent    Boolean  @default(false) @map("privacy_consent")
+  marketingConsent  Boolean  @default(false) @map("marketing_consent")
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  studio        Studio        @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  deliveries    Delivery[]
+  reports       Report[]
+  invoices      Invoice[]
+  activities    Activity[]
+  appointments  Appointment[]
+
+  @@index([lastName, firstName])
+  @@index([fiscalCode])
+  @@index([birthDate])
+  @@map("patients")
+}
+
+/// Storico Parti
+model Delivery {
+  id              String   @id @default(uuid())
+  patientId       String   @map("patient_id")
+  studioId        String   @map("studio_id")
+
+  // Dati Parto
+  deliveryDate    DateTime @map("delivery_date") @db.Date
+  deliveryType    String   @map("delivery_type") // 'natural' | 'cesarean' | 'assisted'
+  pregnancyWeeks  Int?     @map("pregnancy_weeks")
+  babyWeight      Decimal? @map("baby_weight") @db.Decimal(10, 2)
+  babyGender      String?  @map("baby_gender") // 'male' | 'female'
+  complications   String?
+  notes           String?
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  studio  Studio  @relation(fields: [studioId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, deliveryDate(sort: Desc)])
+  @@map("deliveries")
+}
+
+/// Referti Medici Strutturati
+model Report {
+  id           String   @id @default(uuid())
+  patientId    String   @map("patient_id")
+  studioId     String   @map("studio_id")
+
+  // Intestazione Referto
+  reportDate   DateTime @map("report_date") @db.Date
+  visitType    String   @map("visit_type")
+  reportNumber String   @unique @map("report_number")
+
+  // SEZIONE 1: Resoconto Paziente (snapshot JSON)
+  patientSnapshot Json @map("patient_snapshot")
+
+  // SEZIONE 2: Esame Obiettivo
+  examination String
+
+  // SEZIONE 3: Risultato Ecografia
+  ultrasoundResult String? @map("ultrasound_result")
+
+  // SEZIONE 4: Terapia
+  therapy String?
+
+  // Allegati e Note
+  attachments   Json?   // Array di path file
+  internalNotes String? @map("internal_notes")
+
+  // Firma Medico
+  doctorName  String?  @map("doctor_name")
+  doctorTitle String?  @map("doctor_title")
+  signed      Boolean  @default(false)
+
+  // Metadata
+  createdBy String?   @map("created_by") // FK users in Fase 2
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  studio  Studio  @relation(fields: [studioId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, reportDate(sort: Desc)])
+  @@index([reportNumber])
+  @@map("reports")
+}
+
+/// Fatture
+model Invoice {
+  id             String   @id @default(uuid())
+  patientId      String   @map("patient_id")
+  studioId       String   @map("studio_id")
+
+  invoiceNumber  String   @unique @map("invoice_number")
+  invoiceDate    DateTime @map("invoice_date") @db.Date
+  dueDate        DateTime? @map("due_date") @db.Date
+
+  amount         Decimal  @db.Decimal(10, 2)
+  vatRate        Decimal? @map("vat_rate") @db.Decimal(5, 2)
+  vatAmount      Decimal? @map("vat_amount") @db.Decimal(10, 2)
+  totalAmount    Decimal  @map("total_amount") @db.Decimal(10, 2)
+
+  paymentMethod  String?  @map("payment_method")
+  paymentStatus  String   @map("payment_status") // 'paid' | 'pending' | 'cancelled' | 'overdue'
+  paymentDate    DateTime? @map("payment_date") @db.Date
+
+  notes          String?
+  items          Json?    // Array di voci fattura
+
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  studio  Studio  @relation(fields: [studioId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, invoiceDate(sort: Desc)])
+  @@map("invoices")
+}
+
+/// Timeline Attività Paziente
+model Activity {
+  id            String   @id @default(uuid())
+  patientId     String   @map("patient_id")
+
+  activityType  String   @map("activity_type")
+  activityDate  DateTime @map("activity_date")
+  description   String
+  referenceId   String?  @map("reference_id")
+  referenceType String?  @map("reference_type")
+
+  createdBy     String?  @map("created_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, activityDate(sort: Desc)])
+  @@map("activities")
+}
+
+// ============================================
+// FASE 2: Appuntamenti e Autenticazione
+// ============================================
+
+/// Appuntamenti (FASE 2)
+model Appointment {
+  id              String   @id @default(uuid())
+  patientId       String   @map("patient_id")
+  studioId        String   @map("studio_id")
+
+  appointmentDate DateTime @map("appointment_date")
+  durationMinutes Int      @default(30) @map("duration_minutes")
+  appointmentType String   @map("appointment_type")
+  status          String   // 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
+  notes           String?
+
+  reminderSent    Boolean  @default(false) @map("reminder_sent")
+
+  createdBy       String?  @map("created_by")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  studio  Studio  @relation(fields: [studioId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, appointmentDate(sort: Desc)])
+  @@index([appointmentDate])
+  @@index([status])
+  @@map("appointments")
+}

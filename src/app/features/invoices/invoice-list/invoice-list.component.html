@@ -1,0 +1,95 @@
+<div class="invoices-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>{{ 'invoice.title' | translate }}</h1>
+  </div>
+
+  <!-- Barra di ricerca -->
+  <mat-card class="search-card">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Cerca per numero, paziente o stato...</mat-label>
+      <input
+        (keyup)="applyFilter($event)"
+        matInput
+        type="text">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </mat-card>
+
+  <!-- Loading spinner -->
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Tabella fatture -->
+  @if (!loading) {
+    <mat-card class="table-card">
+      <table [dataSource]="dataSource" class="invoices-table" mat-table>
+
+        <!-- Colonna Numero Fattura -->
+        <ng-container matColumnDef="invoiceNumber">
+          <th *matHeaderCellDef mat-header-cell>{{ 'invoice.invoice_number' | translate }}</th>
+          <td *matCellDef="let invoice" mat-cell>
+            <strong>{{ invoice.invoiceNumber }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Colonna Paziente -->
+        <ng-container matColumnDef="patient">
+          <th *matHeaderCellDef mat-header-cell>Paziente</th>
+          <td *matCellDef="let invoice" mat-cell>{{ invoice.patientName }}</td>
+        </ng-container>
+
+        <!-- Colonna Data -->
+        <ng-container matColumnDef="invoiceDate">
+          <th *matHeaderCellDef mat-header-cell>{{ 'invoice.invoice_date' | translate }}</th>
+          <td *matCellDef="let invoice" mat-cell>{{ formatDate(invoice.invoiceDate) }}</td>
+        </ng-container>
+
+        <!-- Colonna Importo -->
+        <ng-container matColumnDef="totalAmount">
+          <th *matHeaderCellDef mat-header-cell>{{ 'invoice.total' | translate }}</th>
+          <td *matCellDef="let invoice" mat-cell>
+            <strong class="amount">€ {{ invoice.totalAmount | number:'1.2-2' }}</strong>
+          </td>
+        </ng-container>
+
+        <!-- Colonna Stato -->
+        <ng-container matColumnDef="paymentStatus">
+          <th *matHeaderCellDef mat-header-cell>{{ 'invoice.payment_status' | translate }}</th>
+          <td *matCellDef="let invoice" mat-cell>
+            <mat-chip [style.background-color]="getStatusColor(invoice.paymentStatus)">
+              {{ getPaymentStatusLabel(invoice.paymentStatus) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Colonna Azioni -->
+        <ng-container matColumnDef="actions">
+          <th *matHeaderCellDef mat-header-cell>{{ 'common.actions' | translate }}</th>
+          <td *matCellDef="let invoice" mat-cell>
+            <button
+              (click)="downloadPDF(invoice)"
+              mat-icon-button
+              matTooltip="Scarica PDF">
+              <mat-icon>download</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+        <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+      </table>
+
+      <!-- Paginator -->
+      <mat-paginator
+        [length]="dataSource.data.length"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        [pageSize]="10"
+        [showFirstLastButtons]="true">
+      </mat-paginator>
+    </mat-card>
+  }
+</div>

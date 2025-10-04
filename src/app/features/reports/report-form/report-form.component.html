@@ -1,0 +1,248 @@
+<div class="report-form-container">
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!loading() && patient()) {
+    <!-- Header -->
+    <div class="header">
+      <button (click)="onCancel()"
+              mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-info">
+        <h1>{{ 'report.new_report' | translate }}</h1>
+        <p class="subtitle">
+          {{ patient()!.firstName }} {{ patient()!.lastName }} •
+          {{ calculateAge(patient()!.birthDate) }} {{ 'common.years' | translate }}
+        </p>
+      </div>
+    </div>
+    <form (ngSubmit)="onSubmit()"
+          [formGroup]="reportForm">
+      <!-- Intestazione Referto -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>{{ 'report.sections.report_header' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-grid">
+            <!-- Data Esame -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'report.report_date' | translate }} *</mat-label>
+              <input [matDatepicker]="reportDatePicker"
+                     formControlName="reportDate"
+                     matInput>
+              <mat-datepicker-toggle [for]="reportDatePicker"
+                                     matIconSuffix></mat-datepicker-toggle>
+              <mat-datepicker #reportDatePicker></mat-datepicker>
+            </mat-form-field>
+            <!-- Tipo Visita -->
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'report.visit_type' | translate }} *</mat-label>
+              <mat-select formControlName="visitType">
+                @for (type of visitTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ 'report.visit_types.' + type | translate }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <!-- Numero Referto (read-only) -->
+            <mat-form-field appearance="outline"
+                            class="full-width">
+              <mat-label>{{ 'report.report_number' | translate }}</mat-label>
+              <input [value]="reportNumber()"
+                     matInput
+                     readonly>
+              <mat-icon matPrefix>tag</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+      <!-- SEZIONE 1: Resoconto Paziente (Auto-compilato) -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            {{ 'report.sections.patient_summary' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="patient-summary">
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span class="label">{{ 'patient.fields.first_name' | translate }}
+                  / {{ 'patient.fields.last_name' | translate }}</span>
+                <span class="value">{{ patient()!.firstName }} {{ patient()!.lastName }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">{{ 'patient.fields.birth_date' | translate }}</span>
+                <span class="value">{{ formatDate(patient()!.birthDate) }} ({{ calculateAge(patient()!.birthDate) }}
+                  anni)</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">{{ 'patient.fields.fiscal_code' | translate }}</span>
+                <span class="value">{{ patient()!.fiscalCode || '-' }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">{{ 'patient.fields.phone' | translate }}</span>
+                <span class="value">{{ patient()!.mobile || patient()!.phone || '-' }}</span>
+              </div>
+              <div class="summary-item full-width">
+                <span class="label">{{ 'patient.fields.address' | translate }}</span>
+                <span class="value">
+                  {{ patient()!.address || '-' }}
+                  @if (patient()!.city) {
+                    <br>{{ patient()!.postalCode }} {{ patient()!.city }}
+                  }
+                </span>
+              </div>
+              <div class="summary-item">
+                <span class="label">{{ 'patient.fields.blood_type' | translate }}</span>
+                <span class="value">{{ patient()!.bloodType || '-' }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">{{ 'patient.fields.last_menstruation_date' | translate }}</span>
+                <span class="value">{{ formatDate(patient()!.lastMenstruationDate) }}</span>
+              </div>
+              <div class="summary-item full-width">
+                <span class="label">{{ 'patient.fields.allergies' | translate }}</span>
+                <span class="value">{{ patient()!.allergies || '-' }}</span>
+              </div>
+              <div class="summary-item full-width">
+                <span class="label">{{ 'patient.fields.current_medications' | translate }}</span>
+                <span class="value">{{ patient()!.currentMedications || '-' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+      <!-- SEZIONE 2: Esame Obiettivo -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>medical_services</mat-icon>
+            {{ 'report.sections.examination' | translate }} *
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline"
+                          class="full-width">
+            <mat-label>{{ 'report.fields.examination_placeholder' | translate }}</mat-label>
+            <textarea
+              [placeholder]="'report.fields.examination_placeholder' | translate"
+              formControlName="examination"
+              matInput
+              rows="8">
+            </textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+      <!-- SEZIONE 3: Risultato Ecografia -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>monitor_heart</mat-icon>
+            {{ 'report.sections.ultrasound_result' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline"
+                          class="full-width">
+            <mat-label>{{ 'report.fields.ultrasound_placeholder' | translate }}</mat-label>
+            <textarea
+              [placeholder]="'report.fields.ultrasound_placeholder' | translate"
+              formControlName="ultrasoundResult"
+              matInput
+              rows="8">
+            </textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+      <!-- SEZIONE 4: Terapia Consigliata -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>medication</mat-icon>
+            {{ 'report.sections.therapy' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline"
+                          class="full-width">
+            <mat-label>{{ 'report.fields.therapy_placeholder' | translate }}</mat-label>
+            <textarea
+              [placeholder]="'report.fields.therapy_placeholder' | translate"
+              formControlName="therapy"
+              matInput
+              rows="8">
+            </textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      <mat-divider></mat-divider>
+      <!-- SEZIONE 5: Note Interne -->
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>notes</mat-icon>
+            {{ 'report.sections.internal_notes' | translate }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline"
+                          class="full-width">
+            <mat-label>{{ 'report.sections.internal_notes' | translate }}</mat-label>
+            <textarea
+              formControlName="internalNotes"
+              matInput
+              placeholder="Note private non stampate su PDF"
+              rows="4">
+            </textarea>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      <!-- Actions -->
+      <div class="form-actions">
+        <button
+          (click)="onCancel()"
+          [disabled]="saving()"
+          mat-button
+          type="button">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <div class="action-buttons-right">
+          <button
+            (click)="previewPDF()"
+            [disabled]="saving()"
+            mat-button
+            type="button">
+            <mat-icon>picture_as_pdf</mat-icon>
+            {{ 'report.actions.preview_pdf' | translate }}
+          </button>
+          <button
+            [disabled]="saving()"
+            color="primary"
+            mat-raised-button
+            type="submit">
+            @if (saving()) {
+              <mat-spinner diameter="20"></mat-spinner>
+            } @else {
+              <mat-icon>save</mat-icon>
+            }
+            {{ 'common.save' | translate }}
+          </button>
+        </div>
+      </div>
+    </form>
+  }
+</div>

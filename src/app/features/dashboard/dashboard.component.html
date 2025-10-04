@@ -1,0 +1,35 @@
+<div class="dashboard-container">
+  <h1>{{ 'nav.dashboard' | translate }}</h1>
+
+  <div class="stats-grid">
+    @for (stat of stats; track stat.labelKey) {
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div [style.background-color]="stat.color" class="stat-icon">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <h2 class="stat-value">{{ stat.value() }}</h2>
+            <p class="stat-label">{{ stat.labelKey | translate }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+
+  <mat-card class="welcome-card">
+    <mat-card-header>
+      <mat-card-title>Benvenuto nel Gestionale Ginecologico</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>Questa è la dashboard principale. Da qui potrai:</p>
+      <ul>
+        <li>Gestire i pazienti e il loro storico</li>
+        <li>Creare e visualizzare referti medici</li>
+        <li>Gestire fatture e pagamenti</li>
+        <li>Visualizzare statistiche dello studio</li>
+      </ul>
+      <p><strong>Inizia:</strong> Vai su "Pazienti" per aggiungere il primo paziente.</p>
+    </mat-card-content>
+  </mat-card>
+</div>
