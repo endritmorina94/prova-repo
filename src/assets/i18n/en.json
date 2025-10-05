@@ -157,7 +157,9 @@
       "updated": "Report updated successfully",
       "deleted": "Report deleted successfully",
       "error_save": "Error while saving report",
-      "error_load": "Error while loading report"
+      "error_load": "Error while loading report",
+      "delete_confirm": "Are you sure you want to delete this report?",
+      "error_delete": "Error deleting the report"
     }
   },
   "invoice": {
@@ -200,7 +202,8 @@
       "updated": "Invoice updated successfully",
       "deleted": "Invoice deleted successfully",
       "error_save": "Error while saving invoice",
-      "error_load": "Error while loading invoice"
+      "error_load": "Error while loading invoice",
+      "error_delete": "Error deleting the invoice"
     }
   },
   "settings": {
@@ -210,10 +213,10 @@
   },
   "dashboard": {
     "stats": {
-      "patients": "Pazienti Totali",
-      "reports": "Referti",
-      "invoices": "Fatture",
-      "appointments_today": "Appuntamenti Oggi"
+      "patients": "Total Patients",
+      "reports": "Reports",
+      "invoices": "Invoices",
+      "appointments_today": "Today's Appointments"
     }
   }
 }

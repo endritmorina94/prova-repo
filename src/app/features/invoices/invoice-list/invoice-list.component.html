@@ -71,10 +71,23 @@
           <th *matHeaderCellDef mat-header-cell>{{ 'common.actions' | translate }}</th>
           <td *matCellDef="let invoice" mat-cell>
             <button
+              [routerLink]="['/invoices', invoice.id, 'edit']"
+              mat-icon-button
+              matTooltip="Modifica">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
               (click)="downloadPDF(invoice)"
               mat-icon-button
               matTooltip="Scarica PDF">
               <mat-icon>download</mat-icon>
+            </button>
+            <button
+              (click)="deleteInvoice(invoice)"
+              color="warn"
+              mat-icon-button
+              matTooltip="Elimina">
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>

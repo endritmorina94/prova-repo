@@ -1,35 +1,94 @@
 <div class="dashboard-container">
   <h1>{{ 'nav.dashboard' | translate }}</h1>
 
-  <div class="stats-grid">
-    @for (stat of stats; track stat.labelKey) {
-      <mat-card class="stat-card">
-        <mat-card-content>
-          <div [style.background-color]="stat.color" class="stat-icon">
-            <mat-icon>{{ stat.icon }}</mat-icon>
-          </div>
-          <div class="stat-info">
-            <h2 class="stat-value">{{ stat.value() }}</h2>
-            <p class="stat-label">{{ stat.labelKey | translate }}</p>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    }
-  </div>
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
 
-  <mat-card class="welcome-card">
-    <mat-card-header>
-      <mat-card-title>Benvenuto nel Gestionale Ginecologico</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>Questa è la dashboard principale. Da qui potrai:</p>
-      <ul>
-        <li>Gestire i pazienti e il loro storico</li>
-        <li>Creare e visualizzare referti medici</li>
-        <li>Gestire fatture e pagamenti</li>
-        <li>Visualizzare statistiche dello studio</li>
-      </ul>
-      <p><strong>Inizia:</strong> Vai su "Pazienti" per aggiungere il primo paziente.</p>
-    </mat-card-content>
-  </mat-card>
+  @if (!loading()) {
+    <!-- Statistiche -->
+    <div class="stats-grid">
+      @for (stat of stats(); track stat.labelKey) {
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div [style.background-color]="stat.color" class="stat-icon">
+              <mat-icon>{{ stat.icon }}</mat-icon>
+            </div>
+            <div class="stat-info">
+              <h2 class="stat-value">{{ stat.value }}</h2>
+              <p class="stat-label">{{ stat.labelKey | translate }}</p>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Welcome Card -->
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <mat-card-title>Benvenuto nel Gestionale Ginecologico</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Questa è la dashboard principale. Da qui potrai:</p>
+        <ul>
+          <li>Gestire i pazienti e il loro storico</li>
+          <li>Creare e visualizzare referti medici</li>
+          <li>Gestire fatture e pagamenti</li>
+          <li>Visualizzare statistiche dello studio</li>
+        </ul>
+
+        @if (patientsCount() === 0) {
+          <div class="quick-action">
+            <p><strong>Inizia subito:</strong> Aggiungi il tuo primo paziente per cominciare.</p>
+            <button color="primary" mat-raised-button routerLink="/patients/new">
+              <mat-icon>add</mat-icon>
+              Aggiungi Paziente
+            </button>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Quick Stats -->
+    @if (patientsCount() > 0) {
+      <div class="quick-stats-grid">
+        <mat-card>
+          <mat-card-content>
+            <h3>Attività Recente</h3>
+            <p class="muted">Ultimi 7 giorni</p>
+            <div class="stat-row">
+              <span>Nuovi Referti</span>
+              <strong>{{ reportsCount() }}</strong>
+            </div>
+            <div class="stat-row">
+              <span>Nuove Fatture</span>
+              <strong>{{ invoicesCount() }}</strong>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+          <mat-card-content>
+            <h3>Accesso Rapido</h3>
+            <div class="quick-links">
+              <button mat-stroked-button routerLink="/patients/new">
+                <mat-icon>person_add</mat-icon>
+                Nuovo Paziente
+              </button>
+              <button mat-stroked-button routerLink="/reports/new">
+                <mat-icon>note_add</mat-icon>
+                Nuovo Referto
+              </button>
+              <button mat-stroked-button routerLink="/invoices/new">
+                <mat-icon>receipt_long</mat-icon>
+                Nuova Fattura
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+  }
 </div>

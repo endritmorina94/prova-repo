@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Invoice, Patient, Report, Studio } from '../../shared/models';
 import { DatabaseService } from '../database/database.service';
 import { firstValueFrom } from 'rxjs';
+import { FileSaverService } from '../services/file-saver.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,35 @@ export class PdfGeneratorService {
   private readonly PRIMARY_COLOR: [number, number, number] = [0, 137, 123]; // Teal
   private readonly TEXT_COLOR: [number, number, number] = [33, 33, 33];
   private readonly GRAY_COLOR: [number, number, number] = [117, 117, 117];
+
+  private fileSaver = inject(FileSaverService);
+
+  /**
+   * Scarica PDF referto
+   */
+  async downloadReportPDF(report: Report, patient: Patient): Promise<void> {
+    const doc = await this.generateReportPDF(report, patient);
+    const filename = `Referto_${report.reportNumber}_${patient.lastName}_${patient.firstName}.pdf`;
+
+    // Ottieni il PDF come Uint8Array
+    const pdfData = doc.output('arraybuffer');
+    const uint8Array = new Uint8Array(pdfData);
+
+    await this.fileSaver.saveFile(uint8Array, filename);
+  }
+
+  /**
+   * Scarica PDF fattura
+   */
+  async downloadInvoicePDF(invoice: Invoice, patient: Patient): Promise<void> {
+    const doc = await this.generateInvoicePDF(invoice, patient);
+    const filename = `Fattura_${invoice.invoiceNumber}_${patient.lastName}_${patient.firstName}.pdf`;
+
+    const pdfData = doc.output('arraybuffer');
+    const uint8Array = new Uint8Array(pdfData);
+
+    await this.fileSaver.saveFile(uint8Array, filename);
+  }
 
   /**
    * Genera PDF del referto
@@ -51,14 +81,8 @@ export class PdfGeneratorService {
     return doc;
   }
 
-  /**
-   * Scarica PDF referto
-   */
-  async downloadReportPDF(report: Report, patient: Patient): Promise<void> {
-    const doc = await this.generateReportPDF(report, patient);
-    const filename = `Referto_${report.reportNumber}_${patient.lastName}_${patient.firstName}.pdf`;
-    doc.save(filename);
-  }
+
+
 
   /**
    * Anteprima PDF referto
@@ -92,16 +116,7 @@ export class PdfGeneratorService {
 
     return doc;
   }
-
-  /**
-   * Scarica PDF fattura
-   */
-  async downloadInvoicePDF(invoice: Invoice, patient: Patient): Promise<void> {
-    const doc = await this.generateInvoicePDF(invoice, patient);
-    const filename = `Fattura_${invoice.invoiceNumber}_${patient.lastName}_${patient.firstName}.pdf`;
-    doc.save(filename);
-  }
-
+  
   /**
    * Anteprima PDF fattura
    */

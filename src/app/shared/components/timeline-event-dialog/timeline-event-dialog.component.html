@@ -1,0 +1,36 @@
+<div [style.background-color]="data.color" class="dialog-header">
+  <mat-icon>{{ data.icon }}</mat-icon>
+  <h2>{{ data.title }}</h2>
+</div>
+
+<mat-dialog-content>
+  <div class="fields-container">
+    @for (field of data.fields; track field.label) {
+      <div [class.highlight]="field.highlight" class="field">
+        <label>{{ field.label }}</label>
+        @if (field.textarea) {
+          <div class="field-value textarea">{{ field.value }}</div>
+        } @else {
+          <div class="field-value">{{ field.value }}</div>
+        }
+      </div>
+    }
+  </div>
+</mat-dialog-content>
+
+<mat-divider></mat-divider>
+
+<mat-dialog-actions align="end">
+  <button (click)="onClose()" mat-button>
+    Chiudi
+  </button>
+  @for (action of data.actions; track action.label) {
+    <button
+      (click)="onActionClick(action)"
+      [color]="action.color"
+      mat-raised-button>
+      <mat-icon>{{ action.icon }}</mat-icon>
+      {{ action.label }}
+    </button>
+  }
+</mat-dialog-actions>

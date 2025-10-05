@@ -15,6 +15,11 @@ import { DatabaseService } from '../../../core/database/database.service';
 import { PdfGeneratorService } from '../../../core/pdf/pdf-generator.service';
 import { Report } from '../../../shared/models';
 import { forkJoin } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { RouterLink } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { ReportsService } from '../reports.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 interface ReportWithPatient extends Report {
   patientName: string;
@@ -35,7 +40,8 @@ interface ReportWithPatient extends Report {
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatChipsModule,
-    TranslateModule
+    TranslateModule,
+    RouterLink
   ],
   templateUrl: './report-list.component.html',
   styleUrl: './report-list.component.css'
@@ -49,6 +55,9 @@ export class ReportListComponent implements OnInit, AfterViewInit {
   private pdfGenerator = inject(PdfGeneratorService);
   private translateService = inject(TranslateService);
   private cdr = inject(ChangeDetectorRef);
+  private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private reportsService = inject(ReportsService);
 
   ngOnInit(): void {
     this.loadReports();
@@ -158,4 +167,33 @@ export class ReportListComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
+  protected deleteReport(report: ReportWithPatient): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Elimina Referto',
+        message: `Sei sicuro di voler eliminare il referto ${report.reportNumber}? Questa azione non può essere annullata.`,
+        confirmText: 'Elimina',
+        cancelText: 'Annulla',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.reportsService.deleteReport(report.id).subscribe({
+          next: () => {
+            this.snackBar.open('Referto eliminato con successo', 'Chiudi', { duration: 3000 });
+            this.loadReports();
+          },
+          error: (error) => {
+            console.error('Error deleting report:', error);
+            this.snackBar.open('Errore durante l\'eliminazione', 'Chiudi', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
 }

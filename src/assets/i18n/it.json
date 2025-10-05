@@ -157,7 +157,9 @@
       "updated": "Referto aggiornato con successo",
       "deleted": "Referto eliminato con successo",
       "error_save": "Errore durante il salvataggio del referto",
-      "error_load": "Errore durante il caricamento del referto"
+      "error_load": "Errore durante il caricamento del referto",
+      "delete_confirm": "Sei sicuro di voler eliminare questo referto?",
+      "error_delete": "Errore durante l'eliminazione del referto"
     }
   },
   "invoice": {
@@ -200,7 +202,8 @@
       "updated": "Fattura aggiornata con successo",
       "deleted": "Fattura eliminata con successo",
       "error_save": "Errore durante il salvataggio della fattura",
-      "error_load": "Errore durante il caricamento della fattura"
+      "error_load": "Errore durante il caricamento della fattura",
+      "error_delete": "Errore durante l'eliminazione della fattura"
     }
   },
   "settings": {

@@ -61,10 +61,23 @@
           <th *matHeaderCellDef mat-header-cell>{{ 'common.actions' | translate }}</th>
           <td *matCellDef="let report" mat-cell>
             <button
+              [routerLink]="['/reports', report.id, 'edit']"
+              mat-icon-button
+              matTooltip="Modifica">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
               (click)="downloadPDF(report)"
               mat-icon-button
               matTooltip="Scarica PDF">
               <mat-icon>download</mat-icon>
+            </button>
+            <button
+              (click)="deleteReport(report)"
+              color="warn"
+              mat-icon-button
+              matTooltip="Elimina">
+              <mat-icon>delete</mat-icon>
             </button>
           </td>
         </ng-container>

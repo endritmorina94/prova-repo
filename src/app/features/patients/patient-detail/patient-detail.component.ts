@@ -17,6 +17,18 @@ import { DeliveryDialogComponent } from '../delivery-dialog/delivery-dialog.comp
 import { ReportsService } from '../../reports/reports.service';
 import { InvoicesService } from '../../invoices/invoices.service';
 import { PdfGeneratorService } from '../../../core/pdf/pdf-generator.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { TimelineEventDialogComponent } from '../../../shared/components/timeline-event-dialog/timeline-event-dialog.component';
+
+export interface TimelineEvent {
+  date: Date;
+  type: 'delivery' | 'report' | 'invoice';
+  icon: string;
+  color: string;
+  title: string;
+  description: string;
+  data?: any;
+}
 
 @Component({
   selector: 'app-patient-detail',
@@ -46,6 +58,8 @@ export class PatientDetailComponent implements OnInit {
   protected patientId = signal<string>('');
   protected reports = signal<Report[]>([]);
   protected invoices = signal<Invoice[]>([]);
+// Aggiungi signal
+  protected timelineEvents = signal<TimelineEvent[]>([]);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private patientsService = inject(PatientsService);
@@ -200,7 +214,7 @@ export class PatientDetailComponent implements OnInit {
   protected downloadReportPDF(report: Report): void {
     this.pdfGenerator.downloadReportPDF(report, this.patient()!);
   }
-  
+
   /**
    * Scarica PDF fattura
    */
@@ -209,27 +223,87 @@ export class PatientDetailComponent implements OnInit {
   }
 
   /**
-   * Carica dettagli paziente completi
+   * Elimina referto
    */
-  private loadPatientDetails(id: string): void {
-    this.loading.set(true);
-    this.patientsService.getPatientById(id).subscribe({
-      next: (patient) => {
-        if (patient) {
-          this.patient.set(patient);
-          this.loadDeliveries(id);
-          this.loadReports(id);
-          this.loadInvoices(id);
-        } else {
-          this.router.navigate(['/patients']);
-        }
-      },
-      error: (error) => {
-        console.error('Error loading patient:', error);
-        this.loading.set(false);
-        this.router.navigate(['/patients']);
+  protected deleteReport(report: Report): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Elimina Referto',
+        message: `Sei sicuro di voler eliminare il referto ${report.reportNumber}? Questa azione non può essere annullata.`,
+        confirmText: 'Elimina',
+        cancelText: 'Annulla',
+        confirmColor: 'warn'
       }
     });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.reportsService.deleteReport(report.id).subscribe({
+          next: () => {
+            const successMessage = this.translateService.instant('report.messages.deleted');
+            this.snackBar.open(successMessage, this.translateService.instant('common.close'), { duration: 3000 });
+            this.loadReports(this.patientId());
+          },
+          error: (error) => {
+            console.error('Error deleting report:', error);
+            const errorMessage = this.translateService.instant('report.messages.error_delete');
+            this.snackBar.open(errorMessage, this.translateService.instant('common.close'), { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Elimina fattura
+   */
+  protected deleteInvoice(invoice: Invoice): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Elimina Fattura',
+        message: `Sei sicuro di voler eliminare la fattura ${invoice.invoiceNumber}? Questa azione non può essere annullata.`,
+        confirmText: 'Elimina',
+        cancelText: 'Annulla',
+        confirmColor: 'warn'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.invoicesService.deleteInvoice(invoice.id).subscribe({
+          next: () => {
+            const successMessage = this.translateService.instant('invoice.messages.deleted');
+            this.snackBar.open(successMessage, this.translateService.instant('common.close'), { duration: 3000 });
+            this.loadInvoices(this.patientId());
+          },
+          error: (error) => {
+            console.error('Error deleting invoice:', error);
+            const errorMessage = this.translateService.instant('invoice.messages.error_delete');
+            this.snackBar.open(errorMessage, this.translateService.instant('common.close'), { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Gestisce click su evento timeline
+   */
+  protected onTimelineEventClick(event: TimelineEvent): void {
+    switch (event.type) {
+      case 'report':
+        // Apri dialog con dettagli referto
+        this.openReportDialog(event.data);
+        break;
+      case 'invoice':
+        // Apri dialog con dettagli fattura
+        this.openInvoiceDialog(event.data);
+        break;
+      case 'delivery':
+        // Apri dialog con dettagli parto
+        this.openDeliveryDialog(event.data);
+        break;
+    }
   }
 
   /**
@@ -304,6 +378,201 @@ export class PatientDetailComponent implements OnInit {
       error: (error) => {
         console.error('Error updating delivery:', error);
         this.snackBar.open('Errore durante l\'aggiornamento', 'Chiudi', { duration: 3000 });
+      }
+    });
+  }
+
+  /**
+   * Carica timeline eventi
+   */
+  private loadTimeline(): void {
+    const patientId = this.patientId();
+    const events: TimelineEvent[] = [];
+// Eventi da deliveries
+    this.deliveries().forEach(delivery => {
+      events.push({
+        date: delivery.deliveryDate,
+        type: 'delivery',
+        icon: 'child_care',
+        color: '#e91e63',
+        title: 'Parto Registrato',
+        description: `${delivery.deliveryType === 'cesarean' ? 'Cesareo' : 'Naturale'}${delivery.complications ? ' - Complicazioni' : ''}`,
+        data: delivery
+      });
+    });
+// Eventi da reports
+    this.reports().forEach(report => {
+      events.push({
+        date: report.reportDate,
+        type: 'report',
+        icon: 'description',
+        color: '#1976d2',
+        title: `Referto ${report.reportNumber}`,
+        description: this.getVisitTypeLabel(report.visitType),
+        data: report
+      });
+    });
+// Eventi da invoices
+    this.invoices().forEach(invoice => {
+      events.push({
+        date: invoice.invoiceDate,
+        type: 'invoice',
+        icon: 'receipt',
+        color: '#f57c00',
+        title: `Fattura ${invoice.invoiceNumber}`,
+        description: `€ ${invoice.totalAmount.toFixed(2)} - ${this.getPaymentStatusLabel(invoice.paymentStatus)}`,
+        data: invoice
+      });
+    });
+// Ordina per data (più recenti prima)
+    events.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    this.timelineEvents.set(events);
+  }
+
+// Chiama loadTimeline nel loadPatientDetails dopo aver caricato tutto
+  private loadPatientDetails(id: string): void {
+    this.loading.set(true);
+    this.patientsService.getPatientById(id).subscribe({
+      next: (patient) => {
+        if (patient) {
+          this.patient.set(patient);
+          this.loadDeliveries(id);
+          this.loadReports(id);
+          this.loadInvoices(id);
+          // Aspetta che tutto sia caricato poi genera timeline
+          setTimeout(() => {
+            this.loadTimeline();
+          }, 500);
+        } else {
+          this.router.navigate(['/patients']);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading patient:', error);
+        this.loading.set(false);
+        this.router.navigate(['/patients']);
+      }
+    });
+  }
+
+  /**
+   * Dialog dettagli referto
+   */
+  private openReportDialog(report: Report): void {
+    const dialogRef = this.dialog.open(TimelineEventDialogComponent, {
+      width: '600px',
+      data: {
+        type: 'report',
+        title: `Referto ${report.reportNumber}`,
+        icon: 'description',
+        color: '#1976d2',
+        date: report.reportDate,
+        fields: [
+          { label: 'Numero Referto', value: report.reportNumber },
+          { label: 'Data', value: this.formatDate(report.reportDate) },
+          { label: 'Tipo Visita', value: this.getVisitTypeLabel(report.visitType) },
+          { label: 'Esame Obiettivo', value: report.examination, textarea: true },
+          { label: 'Ecografia', value: report.ultrasoundResult || '-', textarea: true },
+          { label: 'Terapia', value: report.therapy || '-', textarea: true }
+        ],
+        actions: [
+          {
+            label: 'Modifica',
+            icon: 'edit',
+            color: 'primary',
+            action: () => {
+              dialogRef.close();
+              this.router.navigate(['/reports', report.id, 'edit']);
+            }
+          },
+          {
+            label: 'Scarica PDF',
+            icon: 'download',
+            color: 'accent',
+            action: () => {
+              this.downloadReportPDF(report);
+            }
+          }
+        ]
+      }
+    });
+  }
+
+  /**
+   * Dialog dettagli fattura
+   */
+  private openInvoiceDialog(invoice: Invoice): void {
+    const dialogRef = this.dialog.open(TimelineEventDialogComponent, {
+      width: '600px',
+      data: {
+        type: 'invoice',
+        title: `Fattura ${invoice.invoiceNumber}`,
+        icon: 'receipt',
+        color: '#f57c00',
+        date: invoice.invoiceDate,
+        fields: [
+          { label: 'Numero Fattura', value: invoice.invoiceNumber },
+          { label: 'Data Emissione', value: this.formatDate(invoice.invoiceDate) },
+          { label: 'Scadenza', value: invoice.dueDate ? this.formatDate(invoice.dueDate) : '-' },
+          { label: 'Importo', value: `€ ${invoice.amount.toFixed(2)}` },
+          { label: 'IVA', value: `€ ${invoice.vatAmount?.toFixed(2) || '0.00'} (${invoice.vatRate}%)` },
+          { label: 'Totale', value: `€ ${invoice.totalAmount.toFixed(2)}`, highlight: true },
+          { label: 'Metodo Pagamento', value: invoice.paymentMethod },
+          { label: 'Stato', value: this.getPaymentStatusLabel(invoice.paymentStatus) },
+          { label: 'Data Pagamento', value: invoice.paymentDate ? this.formatDate(invoice.paymentDate) : '-' },
+          { label: 'Note', value: invoice.notes || '-', textarea: true }
+        ],
+        actions: [
+          {
+            label: 'Modifica',
+            icon: 'edit',
+            color: 'primary',
+            action: () => {
+              dialogRef.close();
+              this.router.navigate(['/invoices', invoice.id, 'edit']);
+            }
+          },
+          {
+            label: 'Scarica PDF',
+            icon: 'download',
+            color: 'accent',
+            action: () => {
+              this.downloadInvoicePDF(invoice);
+            }
+          }
+        ]
+      }
+    });
+  }
+
+  /**
+   * Dialog dettagli parto
+   */
+  private openDeliveryDialog(delivery: Delivery): void {
+    // Funzione helper per il genere
+    const getGenderLabel = (gender?: string): string => {
+      if (!gender) return '-';
+      return gender === 'male' ? 'Maschio' : gender === 'female' ? 'Femmina' : 'Non specificato';
+    };
+
+    this.dialog.open(TimelineEventDialogComponent, {
+      width: '600px',
+      data: {
+        type: 'delivery',
+        title: 'Dettagli Parto',
+        icon: 'child_care',
+        color: '#e91e63',
+        date: delivery.deliveryDate,
+        fields: [
+          { label: 'Data Parto', value: this.formatDate(delivery.deliveryDate) },
+          { label: 'Tipo', value: delivery.deliveryType === 'cesarean' ? 'Cesareo' : 'Naturale' },
+          { label: 'Settimane Gravidanza', value: delivery.pregnancyWeeks?.toString() || '-' },
+          { label: 'Peso Neonato', value: delivery.babyWeight ? `${delivery.babyWeight} kg` : '-' },
+          { label: 'Sesso Neonato', value: getGenderLabel(delivery.babyGender) },
+          { label: 'Complicazioni', value: delivery.complications || 'Nessuna', textarea: true },
+          { label: 'Note', value: delivery.notes || '-', textarea: true }
+        ],
+        actions: []
       }
     });
   }

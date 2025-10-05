@@ -267,10 +267,23 @@
                         </div>
                         <div class="report-actions">
                           <button
+                            [routerLink]="['/reports', report.id, 'edit']"
+                            mat-icon-button
+                            matTooltip="Modifica">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button
                             (click)="downloadReportPDF(report)"
                             mat-icon-button
                             matTooltip="Scarica PDF">
                             <mat-icon>download</mat-icon>
+                          </button>
+                          <button
+                            (click)="deleteReport(report)"
+                            color="warn"
+                            mat-icon-button
+                            matTooltip="Elimina">
+                            <mat-icon>delete</mat-icon>
                           </button>
                         </div>
                       </div>
@@ -305,7 +318,7 @@
           }
         </div>
       </mat-tab>
-      <!-- TAB 3: Fatture (Placeholder) -->
+      <!-- TAB 3: Fatture -->
       <mat-tab [label]="'patient.tabs.invoices' | translate">
         <div class="tab-content">
           @if (invoices().length > 0) {
@@ -328,10 +341,23 @@
                         </div>
                         <div class="invoice-actions">
                           <button
+                            [routerLink]="['/invoices', invoice.id, 'edit']"
+                            mat-icon-button
+                            matTooltip="Modifica">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button
                             (click)="downloadInvoicePDF(invoice)"
                             mat-icon-button
                             matTooltip="Scarica PDF">
                             <mat-icon>download</mat-icon>
+                          </button>
+                          <button
+                            (click)="deleteInvoice(invoice)"
+                            color="warn"
+                            mat-icon-button
+                            matTooltip="Elimina">
+                            <mat-icon>delete</mat-icon>
                           </button>
                         </div>
                       </div>
@@ -361,15 +387,36 @@
           }
         </div>
       </mat-tab>
-      <!-- TAB 4: Timeline (Placeholder) -->
-      <mat-tab [label]="'patient.tabs.timeline' | translate">
+      <!-- TAB 4: Timeline -->
+      <mat-tab label="Timeline">
         <div class="tab-content">
           <mat-card>
             <mat-card-content>
-              <div class="empty-state">
-                <mat-icon>timeline</mat-icon>
-                <p>Timeline attività disponibile prossimamente</p>
-              </div>
+              @if (timelineEvents().length > 0) {
+                <div class="timeline">
+                  @for (event of timelineEvents(); track $index) {
+                    <div (click)="onTimelineEventClick(event)" class="timeline-item clickable">
+                      <div [style.background-color]="event.color" class="timeline-icon">
+                        <mat-icon>{{ event.icon }}</mat-icon>
+                      </div>
+                      <div class="timeline-content">
+                        <div class="timeline-header">
+                          <strong>{{ event.title }}</strong>
+                          <span class="timeline-date">{{ formatDate(event.date) }}</span>
+                        </div>
+                        <div class="timeline-description">
+                          {{ event.description }}
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-state">
+                  <mat-icon>timeline</mat-icon>
+                  <p>Nessuna attività registrata</p>
+                </div>
+              }
             </mat-card-content>
           </mat-card>
         </div>

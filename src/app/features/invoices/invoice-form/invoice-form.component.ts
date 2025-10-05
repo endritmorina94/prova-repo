@@ -16,7 +16,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { InvoicesService } from '../invoices.service';
 import { PatientsService } from '../../patients/patients.service';
-import { CreateInvoiceDto, Invoice, InvoiceItem, Patient } from '../../../shared/models';
+import { CreateInvoiceDto, Invoice, InvoiceItem, Patient, UpdateInvoiceDto } from '../../../shared/models';
 import { PdfGeneratorService } from '../../../core/pdf/pdf-generator.service';
 
 @Component({
@@ -54,6 +54,8 @@ export class InvoiceFormComponent implements OnInit {
   // Opzioni
   protected paymentMethods = ['cash', 'card', 'bank_transfer', 'check'];
   protected paymentStatuses = ['pending', 'paid', 'cancelled'];
+  protected isEditMode = signal(false);
+  protected invoiceId = signal<string | null>(null);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -62,6 +64,10 @@ export class InvoiceFormComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
   private translateService = inject(TranslateService);
   private pdfGenerator = inject(PdfGeneratorService);
+
+  constructor() {
+    console.log('invoice form');
+  }
 
   /**
    * Ottiene il FormArray degli items
@@ -73,7 +79,7 @@ export class InvoiceFormComponent implements OnInit {
   ngOnInit(): void {
     this.initForm();
     this.loadPatientFromRoute();
-    this.generateInvoiceNumber();
+    this.checkEditMode();
     this.setupCalculations();
   }
 
@@ -86,10 +92,8 @@ export class InvoiceFormComponent implements OnInit {
       this.snackBar.open('Compila tutti i campi obbligatori', 'Chiudi', { duration: 3000 });
       return;
     }
-
     // Crea fattura temporanea per anteprima
     const formValue = this.invoiceForm.value;
-
     const invoiceItems: InvoiceItem[] = this.items.controls.map((item) => {
       const quantity = item.get('quantity')?.value;
       const unitPrice = item.get('unitPrice')?.value;
@@ -100,7 +104,6 @@ export class InvoiceFormComponent implements OnInit {
         total: quantity * unitPrice
       };
     });
-
     const tempInvoice: Invoice = {
       id: 'temp',
       patientId: this.patient()!.id,
@@ -120,7 +123,6 @@ export class InvoiceFormComponent implements OnInit {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-
     this.pdfGenerator.previewInvoicePDF(tempInvoice, this.patient()!);
   }
 
@@ -172,10 +174,30 @@ export class InvoiceFormComponent implements OnInit {
     }
 
     this.saving.set(true);
+
+    if (this.isEditMode()) {
+      this.updateInvoice();
+    } else {
+      this.createInvoice();
+    }
+  }
+
+  /**
+   * Annulla
+   */
+  protected onCancel(): void {
+    if (this.patient()) {
+      this.router.navigate(['/patients', this.patient()!.id]);
+    } else {
+      this.router.navigate(['/patients']);
+    }
+  }
+
+  private createInvoice(): void {
+    // Codice esistente di creazione
     const formValue = this.invoiceForm.value;
     const patient = this.patient()!;
 
-    // Converti items in array di InvoiceItem
     const invoiceItems: InvoiceItem[] = this.items.controls.map((item) => {
       const quantity = item.get('quantity')?.value;
       const unitPrice = item.get('unitPrice')?.value;
@@ -219,15 +241,49 @@ export class InvoiceFormComponent implements OnInit {
     });
   }
 
-  /**
-   * Annulla
-   */
-  protected onCancel(): void {
-    if (this.patient()) {
-      this.router.navigate(['/patients', this.patient()!.id]);
-    } else {
-      this.router.navigate(['/patients']);
-    }
+  private updateInvoice(): void {
+    const formValue = this.invoiceForm.value;
+    const id = this.invoiceId()!;
+
+    const invoiceItems: InvoiceItem[] = this.items.controls.map((item) => {
+      const quantity = item.get('quantity')?.value;
+      const unitPrice = item.get('unitPrice')?.value;
+      return {
+        description: item.get('description')?.value,
+        quantity,
+        unitPrice,
+        total: quantity * unitPrice
+      };
+    });
+
+    const updateData: UpdateInvoiceDto = {
+      invoiceDate: formValue.invoiceDate,
+      dueDate: formValue.dueDate,
+      amount: formValue.amount,
+      vatRate: formValue.vatRate,
+      vatAmount: this.calculatedVatAmount(),
+      totalAmount: this.calculatedTotal(),
+      paymentMethod: formValue.paymentMethod,
+      paymentStatus: formValue.paymentStatus,
+      paymentDate: formValue.paymentDate,
+      notes: formValue.notes,
+      items: invoiceItems
+    };
+
+    this.invoicesService.updateInvoice(id, updateData).subscribe({
+      next: () => {
+        this.saving.set(false);
+        const successMessage = this.translateService.instant('invoice.messages.updated');
+        this.snackBar.open(successMessage, this.translateService.instant('common.close'), { duration: 3000 });
+        this.router.navigate(['/patients', this.patient()!.id]);
+      },
+      error: (error) => {
+        console.error('Error updating invoice:', error);
+        this.saving.set(false);
+        const errorMessage = this.translateService.instant('invoice.messages.error_save');
+        this.snackBar.open(errorMessage, this.translateService.instant('common.close'), { duration: 3000 });
+      }
+    });
   }
 
   /**
@@ -245,7 +301,6 @@ export class InvoiceFormComponent implements OnInit {
       notes: [''],
       items: this.fb.array([])
     });
-
     // Aggiungi una voce di default
     this.addItem();
   }
@@ -276,7 +331,6 @@ export class InvoiceFormComponent implements OnInit {
   private updateCalculations(): void {
     const amount = this.invoiceForm.get('amount')?.value || 0;
     const vatRate = this.invoiceForm.get('vatRate')?.value || 0;
-
     const result = this.invoicesService.calculateTotal(amount, vatRate);
     this.calculatedVatAmount.set(result.vatAmount);
     this.calculatedTotal.set(result.total);
@@ -287,7 +341,6 @@ export class InvoiceFormComponent implements OnInit {
    */
   private loadPatientFromRoute(): void {
     const patientId = this.route.snapshot.queryParamMap.get('patientId');
-
     if (patientId) {
       this.loading.set(true);
       this.patientsService.getPatientById(patientId).subscribe({
@@ -315,6 +368,74 @@ export class InvoiceFormComponent implements OnInit {
     this.invoicesService.getNextInvoiceNumber().subscribe({
       next: (number) => {
         this.invoiceNumber.set(number);
+      }
+    });
+  }
+
+  private checkEditMode(): void {
+    const invoiceId = this.route.snapshot.paramMap.get('id');
+    if (invoiceId) {
+      // Modalità edit
+      this.isEditMode.set(true);
+      this.invoiceId.set(invoiceId);
+      this.loadInvoice(invoiceId);
+    } else {
+      // Modalità creazione - carica paziente e genera numero
+      this.loadPatientFromRoute();
+      this.generateInvoiceNumber();
+    }
+  }
+
+  private loadInvoice(id: string): void {
+    this.loading.set(true);
+    this.invoicesService.getInvoiceById(id).subscribe({
+      next: (invoice) => {
+        if (invoice) {
+          this.invoiceNumber.set(invoice.invoiceNumber);
+          // Carica il paziente
+          this.patientsService.getPatientById(invoice.patientId).subscribe({
+            next: (patient) => {
+              this.patient.set(patient);
+              // Popola il form
+              this.invoiceForm.patchValue({
+                invoiceDate: new Date(invoice.invoiceDate),
+                dueDate: invoice.dueDate ? new Date(invoice.dueDate) : null,
+                amount: invoice.amount,
+                vatRate: invoice.vatRate || 22,
+                paymentMethod: invoice.paymentMethod,
+                paymentStatus: invoice.paymentStatus,
+                paymentDate: invoice.paymentDate ? new Date(invoice.paymentDate) : null,
+                notes: invoice.notes
+              });
+              // Popola gli items
+              this.items.clear();
+              if (invoice.items && Array.isArray(invoice.items)) {
+                invoice.items.forEach((item: any) => {
+                  this.items.push(this.fb.group({
+                    description: [item.description, Validators.required],
+                    quantity: [item.quantity, [Validators.required, Validators.min(1)]],
+                    unitPrice: [item.unitPrice, [Validators.required, Validators.min(0)]]
+                  }));
+                });
+              } else {
+                this.addItem();
+              }
+              this.loading.set(false);
+            },
+            error: (error) => {
+              console.error('Error loading patient:', error);
+              this.loading.set(false);
+              this.router.navigate(['/invoices']);
+            }
+          });
+        } else {
+          this.router.navigate(['/invoices']);
+        }
+      },
+      error: (error) => {
+        console.error('Error loading invoice:', error);
+        this.loading.set(false);
+        this.router.navigate(['/invoices']);
       }
     });
   }

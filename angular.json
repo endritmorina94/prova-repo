@@ -46,11 +46,20 @@
                 "input": "public"
               },
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "**/*.{woff,woff2,eot,ttf}",
+                "input": "node_modules/material-icons/iconfont/",
+                "output": "/assets/fonts/material-icons/"
+              }
             ],
             "styles": [
               "src/custom-theme.scss",
               "src/styles.css"
+            ],
+            "polyfills": [
+              "zone.js",
+              "src/polyfills.ts"
             ]
           },
           "configurations": {

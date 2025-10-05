@@ -15,6 +15,11 @@ import { DatabaseService } from '../../../core/database/database.service';
 import { PdfGeneratorService } from '../../../core/pdf/pdf-generator.service';
 import { Invoice } from '../../../shared/models';
 import { forkJoin } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { InvoicesService } from '../invoices.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { RouterLink } from '@angular/router';
 
 interface InvoiceWithPatient extends Invoice {
   patientName: string;
@@ -35,7 +40,8 @@ interface InvoiceWithPatient extends Invoice {
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatChipsModule,
-    TranslateModule
+    TranslateModule,
+    RouterLink
   ],
   templateUrl: './invoice-list.component.html',
   styleUrl: './invoice-list.component.css'
@@ -49,6 +55,9 @@ export class InvoiceListComponent implements OnInit, AfterViewInit {
   private pdfGenerator = inject(PdfGeneratorService);
   private translateService = inject(TranslateService);
   private cdr = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+  private invoicesService = inject(InvoicesService);
 
   ngOnInit(): void {
     this.loadInvoices();
@@ -161,6 +170,34 @@ export class InvoiceListComponent implements OnInit, AfterViewInit {
         if (patient) {
           this.pdfGenerator.downloadInvoicePDF(invoice, patient);
         }
+      }
+    });
+  }
+
+  protected deleteInvoice(invoice: InvoiceWithPatient): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Elimina Fattura',
+        message: `Sei sicuro di voler eliminare la fattura ${invoice.invoiceNumber}? Questa azione non può essere annullata.`,
+        confirmText: 'Elimina',
+        cancelText: 'Annulla',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.invoicesService.deleteInvoice(invoice.id).subscribe({
+          next: () => {
+            this.snackBar.open('Fattura eliminata con successo', 'Chiudi', { duration: 3000 });
+            this.loadInvoices();
+          },
+          error: (error) => {
+            console.error('Error deleting invoice:', error);
+            this.snackBar.open('Errore durante l\'eliminazione', 'Chiudi', { duration: 3000 });
+          }
+        });
       }
     });
   }

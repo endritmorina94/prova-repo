@@ -157,7 +157,9 @@
       "updated": "Raporti u përditësua me sukses",
       "deleted": "Raporti u fshi me sukses",
       "error_save": "Gabim gjatë ruajtjes së raportit",
-      "error_load": "Gabim gjatë ngarkimit të raportit"
+      "error_load": "Gabim gjatë ngarkimit të raportit",
+      "delete_confirm": "Jeni të sigurt që dëshironi të fshini këtë raport?",
+      "error_delete": "Gabim gjatë fshirjes së raportit"
     }
   },
   "invoice": {
@@ -200,7 +202,8 @@
       "updated": "Fatura u përditësua me sukses",
       "deleted": "Fatura u fshi me sukses",
       "error_save": "Gabim gjatë ruajtjes së faturës",
-      "error_load": "Gabim gjatë ngarkimit të faturës"
+      "error_load": "Gabim gjatë ngarkimit të faturës",
+      "error_delete": "Gabim gjatë fshirjes së faturës"
     }
   },
   "settings": {
@@ -210,10 +213,10 @@
   },
   "dashboard": {
     "stats": {
-      "patients": "Pazienti Totali",
-      "reports": "Referti",
-      "invoices": "Fatture",
-      "appointments_today": "Appuntamenti Oggi"
+      "patients": "Totali i Pacientëve",
+      "reports": "Raportet",
+      "invoices": "Faturat",
+      "appointments_today": "Takimet e Sotme"
     }
   }
 }
