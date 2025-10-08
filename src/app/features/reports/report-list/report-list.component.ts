@@ -20,6 +20,7 @@ import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ReportsService } from '../reports.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { PdfPreviewService } from '../../../core/services/pdf-preview.service';
 
 interface ReportWithPatient extends Report {
   patientName: string;
@@ -58,6 +59,7 @@ export class ReportListComponent implements OnInit, AfterViewInit {
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private reportsService = inject(ReportsService);
+  private readonly pdfPreview = inject(PdfPreviewService);
 
   ngOnInit(): void {
     this.loadReports();
@@ -195,5 +197,41 @@ export class ReportListComponent implements OnInit, AfterViewInit {
       }
     });
   }
+
+  /**
+   * Apre l'anteprima del PDF del referto
+   */
+  protected async previewPDF(report: ReportWithPatient): Promise<void> {
+    this.db.getPatientById(report.patientId).subscribe({
+      next: async (patient) => {
+        if (patient) {
+          try {
+            // Genera il PDF come Uint8Array
+            const doc = await this.pdfGenerator.generateReportPDF(report, patient);
+            const filename = `Referto_${report.reportNumber}_${patient.lastName}_${patient.firstName}.pdf`;
+
+            // Ottieni il PDF come Uint8Array
+            const pdfData = doc.output('arraybuffer');
+            const uint8Array = new Uint8Array(pdfData);
+
+            // Apri l'anteprima
+            this.pdfPreview.openPreview(uint8Array, filename);
+          } catch (error) {
+            console.error('Error generating PDF preview:', error);
+            this.snackBar.open('Errore durante la generazione dell\'anteprima', 'Chiudi', {
+              duration: 3000
+            });
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error loading patient:', error);
+        this.snackBar.open('Errore durante il caricamento dei dati', 'Chiudi', {
+          duration: 3000
+        });
+      }
+    });
+  }
+
 
 }

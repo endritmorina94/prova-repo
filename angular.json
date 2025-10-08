@@ -51,6 +51,11 @@
                 "glob": "**/*.{woff,woff2,eot,ttf}",
                 "input": "node_modules/material-icons/iconfont/",
                 "output": "/assets/fonts/material-icons/"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                "output": "/assets/"
               }
             ],
             "styles": [

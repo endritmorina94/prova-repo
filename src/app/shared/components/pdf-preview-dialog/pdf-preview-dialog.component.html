@@ -1,0 +1,43 @@
+<div class="pdf-preview-container">
+  <div class="header">
+    <h2 mat-dialog-title>Anteprima PDF</h2>
+    <button (click)="close()" mat-icon-button>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="content">
+    <ngx-extended-pdf-viewer
+
+      [height]="'calc(100vh - 180px)'"
+      [showDownloadButton]="false"
+      [showFindButton]="true"
+      [showHandToolButton]="false"
+      [showOpenFileButton]="false"
+      [showPagingButtons]="true"
+      [showPresentationModeButton]="false"
+      [showPrintButton]="true"
+      [showPropertiesButton]="false"
+      [showRotateButton]="false"
+      [showSecondaryToolbarButton]="false"
+      [showSidebarButton]="false"
+      [showSpreadButton]="true"
+      [showToolbar]="true"
+      [showZoomButtons]="true"
+      [src]="pdfSrc()"
+      [textLayer]="false"
+      [zoom]="'auto'">
+    </ngx-extended-pdf-viewer>
+  </div>
+
+  <div class="actions">
+    <button (click)="close()" mat-button>
+      <mat-icon>cancel</mat-icon>
+      Annulla
+    </button>
+    <button (click)="download()" color="primary" mat-raised-button>
+      <mat-icon>download</mat-icon>
+      Scarica PDF
+    </button>
+  </div>
+</div>
