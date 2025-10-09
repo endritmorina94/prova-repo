@@ -218,5 +218,42 @@
       "invoices": "Faturat",
       "appointments_today": "Takimet e Sotme"
     }
+  },
+  "appointment": {
+    "title": "Takimet",
+    "calendar": "Kalendari",
+    "list": "Lista e Takimeve",
+    "new_appointment": "Takim i Ri",
+    "edit_appointment": "Ndrysho Takimin",
+    "appointment_date": "Data dhe Ora",
+    "duration": "Kohëzgjatja (minuta)",
+    "patient": "Pacienti",
+    "reason": "Arsyeja",
+    "notes": "Shënime",
+    "status": "Statusi",
+    "today": "Sot",
+    "this_week": "Këtë Javë",
+    "this_month": "Këtë Muaj",
+    "all": "Të Gjitha",
+    "statuses": {
+      "scheduled": "I Planifikuar",
+      "completed": "I Përfunduar",
+      "cancelled": "I Anulluar",
+      "no_show": "Nuk u Paraqit"
+    },
+    "messages": {
+      "created": "Takimi u krijua me sukses",
+      "updated": "Takimi u përditësua me sukses",
+      "deleted": "Takimi u fshi me sukses",
+      "error_save": "Gabim gjatë ruajtjes së takimit",
+      "error_load": "Gabim gjatë ngarkimit të takimit",
+      "error_delete": "Gabim gjatë fshirjes së takimit",
+      "confirm_delete": "Jeni të sigurt që dëshironi të fshini këtë takim?"
+    },
+    "filters": {
+      "filter_by_status": "Filtro sipas Statusit",
+      "filter_by_date": "Filtro sipas Datës",
+      "search_patient": "Kërko Pacientin"
+    }
   }
 }

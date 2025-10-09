@@ -50,6 +50,7 @@ export class SettingsComponent implements OnInit {
     }
 
     this.saving.set(true);
+    console.log(this.settingsForm.value);
     this.db.updateStudioSettings(this.settingsForm.value).subscribe({
       next: () => {
         this.saving.set(false);
@@ -68,7 +69,7 @@ export class SettingsComponent implements OnInit {
       name: ['', Validators.required],
       vatNumber: [''],
       address: [''],
-      city: [''],
+      city: ['Suhareke'],
       postalCode: [''],
       province: [''],
       phone: [''],

@@ -1,6 +1,5 @@
 import { effect, Injectable, signal } from '@angular/core';
 import { delay, Observable, of, throwError } from 'rxjs';
-import { DatabaseService } from './database.service';
 import { Activity, CreateActivityDto, CreateDeliveryDto, CreateInvoiceDto, CreatePatientDto, CreateReportDto, Delivery, Invoice, Patient, Report, Studio, UpdateDeliveryDto, UpdateInvoiceDto, UpdatePatientDto, UpdateReportDto, UpdateStudioDto } from '../../shared/models';
 // Chiavi localStorage
 const STORAGE_KEYS = {
@@ -22,7 +21,9 @@ const STORAGE_KEYS = {
 @Injectable({
   providedIn: 'root'
 })
-export class MockDbService extends DatabaseService {
+export class MockDbService
+ // extends DatabaseService
+{
   private patients = signal<Patient[]>([]);
   private deliveries = signal<Delivery[]>([]);
   private reports = signal<Report[]>([]);
@@ -34,7 +35,7 @@ export class MockDbService extends DatabaseService {
   private invoiceCounter = 1;
 
   constructor() {
-    super();
+   // super();
     this.loadFromLocalStorage();
     this.setupAutoSave();
   }

@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
@@ -46,6 +46,7 @@ export class AppComponent {
     { path: '/dashboard', icon: 'dashboard', labelKey: 'nav.dashboard' },
     { path: '/patients', icon: 'people', labelKey: 'nav.patients' },
     { path: '/reports', icon: 'description', labelKey: 'nav.reports' },
+    { path: '/appointments', icon: 'event', labelKey: 'nav.appointments' },
     { path: '/invoices', icon: 'receipt', labelKey: 'nav.invoices' },
     { path: '/settings', icon: 'settings', labelKey: 'nav.settings' }
   ];

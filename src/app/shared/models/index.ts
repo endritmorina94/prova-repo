@@ -5,3 +5,4 @@ export * from './report.model';
 export * from './invoice.model';
 export * from './activity.model';
 export * from './studio.model';
+export * from './appointment.model';

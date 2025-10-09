@@ -116,7 +116,7 @@ export class PdfGeneratorService {
 
     return doc;
   }
-  
+
   /**
    * Anteprima PDF fattura
    */
@@ -332,7 +332,7 @@ export class PdfGeneratorService {
     doc.setFontSize(10);
     doc.setTextColor(...this.TEXT_COLOR);
     doc.setFont('helvetica', 'normal');
-    const city = studio.city || 'Milano';
+    const city = studio.city || 'Suhareke';
     doc.text(`${city}, ${this.formatDate(report.reportDate)}`, dateX, yPosition);
 
     const signatureX = this.PAGE_WIDTH - this.MARGIN - 60;
@@ -349,13 +349,13 @@ export class PdfGeneratorService {
     doc.setFontSize(10);
     doc.setTextColor(...this.TEXT_COLOR);
     doc.setFont('helvetica', 'bold');
-    const doctorName = report.doctorName || studio.doctorName || 'Dr.ssa';
+    const doctorName = `${studio.doctorName || 'Dr.'}`;
     doc.text(doctorName, signatureX + 30, yPosition, { align: 'center' });
 
     yPosition += 5;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
-    const doctorTitle = report.doctorTitle || studio.doctorTitle || 'Specialista in Ginecologia e Ostetricia';
+    const doctorTitle = `${studio.doctorTitle || 'Specialista in Ginecologia e Ostetricia'}`;
     doc.text(doctorTitle, signatureX + 30, yPosition, { align: 'center' });
 
     return yPosition;

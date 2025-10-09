@@ -1,10 +1,13 @@
+/* src/app/shared/components/timeline-event-dialog/timeline-event-dialog.component.css */
+
 .dialog-header {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 24px;
-  margin: -24px -24px 24px;
   color: white;
+  /* ✅ Border radius solo top */
+  border-radius: 4px 4px 0 0;
 }
 
 .dialog-header mat-icon {
@@ -21,16 +24,16 @@
 
 mat-dialog-content {
   padding: 0 24px;
-  max-height: 60vh;
-  /*
-  overflow-y: auto;
-   */
+  /* ❌ Rimosso max-height per evitare scroll */
+  /* ❌ Rimosso overflow-y */
 }
 
 .fields-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  /* ✅ Padding per evitare contenuto troppo attaccato */
+  padding: 16px 0;
 }
 
 .field {
@@ -74,9 +77,9 @@ mat-dialog-content {
 }
 
 mat-dialog-actions {
-  padding: 16px 24px;
-  margin: 0 -24px -24px;
   gap: 8px;
+  /* ✅ Border radius solo bottom */
+  border-radius: 0 0 4px 4px;
 }
 
 mat-dialog-actions button mat-icon {

@@ -218,5 +218,42 @@
       "invoices": "Fatture",
       "appointments_today": "Appuntamenti Oggi"
     }
+  },
+  "appointment": {
+    "title": "Appuntamenti",
+    "calendar": "Calendario",
+    "list": "Lista Appuntamenti",
+    "new_appointment": "Nuovo Appuntamento",
+    "edit_appointment": "Modifica Appuntamento",
+    "appointment_date": "Data e Ora",
+    "duration": "Durata (minuti)",
+    "patient": "Paziente",
+    "reason": "Motivo",
+    "notes": "Note",
+    "status": "Stato",
+    "today": "Oggi",
+    "this_week": "Questa Settimana",
+    "this_month": "Questo Mese",
+    "all": "Tutti",
+    "statuses": {
+      "scheduled": "Programmato",
+      "completed": "Completato",
+      "cancelled": "Cancellato",
+      "no_show": "Non Presentato"
+    },
+    "messages": {
+      "created": "Appuntamento creato con successo",
+      "updated": "Appuntamento aggiornato con successo",
+      "deleted": "Appuntamento eliminato con successo",
+      "error_save": "Errore durante il salvataggio",
+      "error_load": "Errore durante il caricamento",
+      "error_delete": "Errore durante l'eliminazione",
+      "confirm_delete": "Sei sicuro di voler eliminare questo appuntamento?"
+    },
+    "filters": {
+      "filter_by_status": "Filtra per Stato",
+      "filter_by_date": "Filtra per Data",
+      "search_patient": "Cerca Paziente"
+    }
   }
 }

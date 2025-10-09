@@ -1,0 +1,142 @@
+<h2 mat-dialog-title>
+  @if (isEditMode()) {
+    <mat-icon>edit</mat-icon>
+    {{ 'appointment.edit_appointment' | translate }}
+  } @else {
+    <mat-icon>add</mat-icon>
+    {{ 'appointment.new_appointment' | translate }}
+  }
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="appointmentForm" class="appointment-form">
+
+    <!-- Paziente (Autocomplete) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'appointment.patient' | translate }} *</mat-label>
+      <input
+        [matAutocomplete]="auto"
+        formControlName="patientId"
+        matInput
+        type="text">
+      <mat-icon matPrefix>person</mat-icon>
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayPatient.bind(this)">
+        @for (patient of filteredPatients | async; track patient.id) {
+          <mat-option [value]="patient.id">
+            {{ patient.firstName }} {{ patient.lastName }}
+            @if (patient.phone || patient.mobile) {
+              <span class="patient-phone">- {{ patient.phone || patient.mobile }}</span>
+            }
+          </mat-option>
+        }
+      </mat-autocomplete>
+      @if (appointmentForm.get('patientId')?.hasError('required')) {
+        <mat-error>Campo obbligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Data e Ora -->
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'appointment.appointment_date' | translate }} *</mat-label>
+        <input
+          [matDatepicker]="picker"
+          formControlName="appointmentDate"
+          matInput>
+        <mat-icon matPrefix>calendar_today</mat-icon>
+        <mat-datepicker-toggle [for]="picker" matSuffix></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        @if (appointmentForm.get('appointmentDate')?.hasError('required')) {
+          <mat-error>Campo obbligatorio</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Ora *</mat-label>
+        <input
+          formControlName="appointmentTime"
+          matInput
+          type="time">
+        <mat-icon matPrefix>access_time</mat-icon>
+        @if (appointmentForm.get('appointmentTime')?.hasError('required')) {
+          <mat-error>Campo obbligatorio</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Durata e Stato -->
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'appointment.duration' | translate }} *</mat-label>
+        <mat-select formControlName="duration">
+          @for (duration of durations; track duration) {
+            <mat-option [value]="duration">{{ duration }} min</mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>schedule</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'appointment.status' | translate }} *</mat-label>
+        <mat-select formControlName="status">
+          @for (status of statuses; track status) {
+            <mat-option [value]="status">
+              {{ getStatusLabel(status) }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-icon matPrefix>flag</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Tipo Visita -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'report.visit_type' | translate }}</mat-label>
+      <mat-select formControlName="reason">
+        @for (type of visitTypes; track type) {
+          <mat-option [value]="type">
+            {{ getVisitTypeLabel(type) }}
+          </mat-option>
+        }
+      </mat-select>
+      <mat-icon matPrefix>medical_services</mat-icon>
+    </mat-form-field>
+
+    <!-- Note -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'appointment.notes' | translate }}</mat-label>
+      <textarea
+        formControlName="notes"
+        matInput
+        rows="4"></textarea>
+      <mat-icon matPrefix>notes</mat-icon>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    (click)="onCancel()"
+    [disabled]="saving()"
+    mat-button>
+    {{ 'common.cancel' | translate }}
+  </button>
+
+  <button
+    (click)="onSubmit()"
+    [disabled]="saving()"
+    color="primary"
+    mat-raised-button>
+    @if (saving()) {
+      <mat-spinner diameter="20"></mat-spinner>
+    }
+    @if (!saving()) {
+      @if (isEditMode()) {
+        {{ 'common.update' | translate }}
+      } @else {
+        {{ 'common.save' | translate }}
+      }
+    }
+  </button>
+</mat-dialog-actions>

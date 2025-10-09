@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { catchError, from, map, Observable, throwError } from 'rxjs';
 import { PrismaClient } from '@prisma/client';
-import { DatabaseService } from './database.service';
 import { Activity, CreateActivityDto, CreateDeliveryDto, CreateInvoiceDto, CreatePatientDto, CreateReportDto, Delivery, Invoice, Patient, Report, Studio, UpdateDeliveryDto, UpdateInvoiceDto, UpdatePatientDto, UpdateReportDto, UpdateStudioDto } from '../../shared/models';
 
 /**
@@ -11,12 +10,14 @@ import { Activity, CreateActivityDto, CreateDeliveryDto, CreateInvoiceDto, Creat
 @Injectable({
   providedIn: 'root'
 })
-export class LocalDbService extends DatabaseService {
+export class LocalDbService
+  //extends DatabaseService
+{
   private prisma: PrismaClient;
   private readonly DEFAULT_STUDIO_ID = 'default-studio-id';
 
   constructor() {
-    super();
+    //super();
     this.prisma = new PrismaClient();
     this.initializeDefaultStudio();
   }

@@ -1,3 +1,4 @@
+// src/app/app.config.ts
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -5,11 +6,10 @@ import { provideTranslateService } from "@ngx-translate/core";
 import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
 import { routes } from './app.routes';
 import { DatabaseService } from './core/database/database.service';
-import { MockDbService } from './core/database/mock-db.service';
+import { SqliteDbService } from './core/database/sqlite-db.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
     provideHttpClient(),
     provideTranslateService({
       loader: provideTranslateHttpLoader({
@@ -25,8 +25,8 @@ export const appConfig: ApplicationConfig = {
       withViewTransitions(),
       withComponentInputBinding()
     ),
-    // Database provider - usa LocalDbService per Fase 1
-    // { provide: DatabaseService, useClass: LocalDbService }
-    { provide: DatabaseService, useClass: MockDbService }
+
+    // ✅ Usa SQLite senza migrazione
+    { provide: DatabaseService, useClass: SqliteDbService }
   ]
 };

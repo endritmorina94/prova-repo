@@ -162,7 +162,7 @@ mat-card:last-child {
   text-align: center;
 }
 
-.empty-state mat-icon {
+.empty-state > mat-icon:first-of-type {
   font-size: 64px;
   width: 64px;
   height: 64px;

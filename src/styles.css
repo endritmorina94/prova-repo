@@ -13,3 +13,44 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .pdf-preview-dialog .mat-mdc-dialog-surface {
   border-radius: 8px;
 }
+
+/* ========================================
+   DIALOG STYLES
+   ======================================== */
+
+/* Stili per la modale PDF */
+.pdf-preview-dialog .mat-mdc-dialog-container {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.pdf-preview-dialog .mat-mdc-dialog-surface {
+  border-radius: 8px;
+}
+
+/* ✅ Stili per Timeline Event Dialog */
+.timeline-event-dialog .mat-mdc-dialog-container {
+  /* Border radius */
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.timeline-event-dialog .mat-mdc-dialog-surface {
+  border-radius: 6px;
+  /* Auto width basata sul contenuto */
+  max-width: 90vw;
+  width: auto;
+  min-width: 500px;
+  overflow: hidden;
+}
+
+/* Rimuovi scroll dal dialog content */
+.timeline-event-dialog mat-dialog-content {
+  overflow-y: visible !important;
+  max-height: none !important;
+}
+
+/* Assicura che il container del dialog non abbia scroll */
+.timeline-event-dialog .mat-mdc-dialog-container {
+  overflow: visible;
+}

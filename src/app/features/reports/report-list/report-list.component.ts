@@ -22,7 +22,7 @@ import { ReportsService } from '../reports.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PdfPreviewService } from '../../../core/services/pdf-preview.service';
 
-interface ReportWithPatient extends Report {
+export interface ReportWithPatient extends Report {
   patientName: string;
 }
 

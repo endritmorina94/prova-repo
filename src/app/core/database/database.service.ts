@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Activity, CreateActivityDto, CreateDeliveryDto, CreateInvoiceDto, CreatePatientDto, CreateReportDto, Delivery, Invoice, Patient, Report, Studio, UpdateDeliveryDto, UpdateInvoiceDto, UpdatePatientDto, UpdateReportDto, UpdateStudioDto } from '../../shared/models';
+import { Activity, Appointment, AppointmentFilters, AppointmentStatus, CreateActivityDto, CreateAppointmentDto, CreateDeliveryDto, CreateInvoiceDto, CreatePatientDto, CreateReportDto, Delivery, Invoice, Patient, Report, Studio, UpdateAppointmentDto, UpdateDeliveryDto, UpdateInvoiceDto, UpdatePatientDto, UpdateReportDto, UpdateStudioDto } from '../../shared/models';
 
 /**
  * Abstraction layer per database operations
@@ -151,4 +151,52 @@ export abstract class DatabaseService {
    * Crea una nuova attività
    */
   abstract createActivity(data: CreateActivityDto): Observable<Activity>;
+
+
+  // ==================== APPOINTMENTS ====================
+
+  /**
+   * Ottiene tutti gli appuntamenti in un range di date
+   */
+  abstract getAppointments(filters?: AppointmentFilters): Observable<Appointment[]>;
+
+  /**
+   * Ottiene appuntamenti per paziente
+   */
+  abstract getAppointmentsByPatient(patientId: string): Observable<Appointment[]>;
+
+  /**
+   * Ottiene appuntamenti per data specifica
+   */
+  abstract getAppointmentsByDate(date: Date): Observable<Appointment[]>;
+
+  /**
+   * Ottiene un appuntamento per ID
+   */
+  abstract getAppointmentById(id: string): Observable<Appointment | null>;
+
+  /**
+   * Crea un nuovo appuntamento
+   */
+  abstract createAppointment(data: CreateAppointmentDto): Observable<Appointment>;
+
+  /**
+   * Aggiorna un appuntamento
+   */
+  abstract updateAppointment(id: string, data: UpdateAppointmentDto): Observable<Appointment>;
+
+  /**
+   * Elimina un appuntamento
+   */
+  abstract deleteAppointment(id: string): Observable<void>;
+
+  /**
+   * Ottiene appuntamenti della giornata
+   */
+  abstract getTodayAppointments(): Observable<Appointment[]>;
+
+  /**
+   * Conta appuntamenti per stato
+   */
+  abstract countAppointmentsByStatus(status: AppointmentStatus): Observable<number>;
 }

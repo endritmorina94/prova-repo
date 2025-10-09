@@ -218,5 +218,42 @@
       "invoices": "Invoices",
       "appointments_today": "Today's Appointments"
     }
+  },
+  "appointment": {
+    "title": "Appointments",
+    "calendar": "Calendar",
+    "list": "Appointments List",
+    "new_appointment": "New Appointment",
+    "edit_appointment": "Edit Appointment",
+    "appointment_date": "Date and Time",
+    "duration": "Duration (minutes)",
+    "patient": "Patient",
+    "reason": "Reason",
+    "notes": "Notes",
+    "status": "Status",
+    "today": "Today",
+    "this_week": "This Week",
+    "this_month": "This Month",
+    "all": "All",
+    "statuses": {
+      "scheduled": "Scheduled",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No Show"
+    },
+    "messages": {
+      "created": "Appointment created successfully",
+      "updated": "Appointment updated successfully",
+      "deleted": "Appointment deleted successfully",
+      "error_save": "Error while saving appointment",
+      "error_load": "Error while loading appointment",
+      "error_delete": "Error while deleting appointment",
+      "confirm_delete": "Are you sure you want to delete this appointment?"
+    },
+    "filters": {
+      "filter_by_status": "Filter by Status",
+      "filter_by_date": "Filter by Date",
+      "search_patient": "Search Patient"
+    }
   }
 }

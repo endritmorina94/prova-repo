@@ -247,7 +247,7 @@
           </mat-card>
         </div>
       </mat-tab>
-      <!-- TAB 2: Referti (Placeholder) -->
+      <!-- TAB 2: Referti -->
       <mat-tab [label]="'patient.tabs.reports' | translate">
         <div class="tab-content">
           @if (reports().length > 0) {
@@ -266,6 +266,12 @@
                           </span>
                         </div>
                         <div class="report-actions">
+                          <button
+                            (click)="previewReportPDF(report)"
+                            mat-icon-button
+                            matTooltip="Visualizza PDF">
+                            <mat-icon>visibility</mat-icon>
+                          </button>
                           <button
                             [routerLink]="['/reports', report.id, 'edit']"
                             mat-icon-button
@@ -341,7 +347,7 @@
                         </div>
                         <div class="invoice-actions">
                           <button
-                            [routerLink]="['/invoices', invoice.id, 'edit']"
+                            (click)="goToInvoiceDetail(invoice)"
                             mat-icon-button
                             matTooltip="Modifica">
                             <mat-icon>edit</mat-icon>

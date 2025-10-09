@@ -1,0 +1,91 @@
+<div class="calendar-container">
+
+  <!-- Header -->
+  <div class="calendar-header">
+    <h1>{{ 'appointment.calendar' | translate }}</h1>
+    <button (click)="createAppointment()" color="primary" mat-raised-button>
+      <mat-icon>add</mat-icon>
+      {{ 'appointment.new_appointment' | translate }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Calendar -->
+  @if (!loading()) {
+    <mat-card>
+      <!-- Navigation Mese -->
+      <div class="month-navigation">
+        <button (click)="previousMonth()" mat-icon-button>
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+
+        <h2 class="month-title">{{ currentMonthName }}</h2>
+
+        <button (click)="nextMonth()" mat-icon-button>
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+
+        <button (click)="goToToday()" mat-stroked-button>
+          <mat-icon>today</mat-icon>
+          {{ 'appointment.today' | translate }}
+        </button>
+      </div>
+
+      <!-- Griglia Calendario -->
+      <div class="calendar-grid">
+
+        <!-- Header Giorni Settimana -->
+        @for (day of weekDays; track day) {
+          <div class="calendar-header-day">{{ day }}</div>
+        }
+
+        <!-- Giorni del Mese -->
+        @for (day of calendarDays(); track day.date) {
+          <div
+            (click)="onDayClick(day)"
+            [class.has-appointments]="day.appointments.length > 0"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.today]="day.isToday"
+            class="calendar-day">
+
+            <!-- Numero Giorno -->
+            <div class="day-number">
+              {{ day.date.getDate() }}
+              @if (day.appointments.length > 0) {
+                <span [matBadge]="day.appointments.length" class="appointments-count" matBadgeSize="small"></span>
+              }
+            </div>
+
+            <!-- Lista Appuntamenti del Giorno -->
+            @if (day.isCurrentMonth && day.appointments.length > 0) {
+              <div class="day-appointments">
+                @for (appointment of day.appointments.slice(0, 3); track appointment.id) {
+                  <div
+                    (click)="onAppointmentClick($event, appointment)"
+                    [style.border-left-color]="getStatusColor(appointment.status)"
+                    class="appointment-item">
+                    <span class="appointment-time">{{ formatTime(appointment.appointmentDate) }}</span>
+                    <span class="appointment-patient">
+                      {{ appointment.patient?.firstName }} {{ appointment.patient?.lastName }}
+                    </span>
+                  </div>
+                }
+                @if (day.appointments.length > 3) {
+                  <div class="more-appointments">
+                    +{{ day.appointments.length - 3 }} altri
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </mat-card>
+  }
+</div>

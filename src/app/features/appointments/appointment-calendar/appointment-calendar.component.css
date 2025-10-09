@@ -1,0 +1,244 @@
+.calendar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.calendar-header h1 {
+  margin: 0;
+  color: #212121;
+}
+
+.calendar-header button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 64px 0;
+}
+
+/* Month Navigation */
+.month-navigation {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  margin: -16px -16px 16px;
+}
+
+.month-title {
+  flex: 1;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 500;
+  color: #212121;
+}
+
+.month-navigation button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: #e0e0e0;
+  border: 1px solid #e0e0e0;
+}
+
+/* Header Giorni Settimana */
+.calendar-header-day {
+  background-color: #00897b;
+  color: white;
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+/* Giorno Calendario */
+.calendar-day {
+  background-color: white;
+  min-height: 120px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-day:hover {
+  background-color: #f5f5f5;
+}
+
+/* Numero Giorno */
+.day-number {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 14px;
+  color: #212121;
+  margin-bottom: 8px;
+}
+
+.appointments-count {
+  width: 8px;
+  height: 8px;
+  background-color: #00897b;
+  border-radius: 50%;
+}
+
+/* Giorni Altri Mesi */
+.calendar-day.other-month {
+  background-color: #fafafa;
+  opacity: 0.5;
+}
+
+.calendar-day.other-month .day-number {
+  color: #9e9e9e;
+}
+
+/* Oggi */
+.calendar-day.today {
+  background-color: #e0f2f1;
+  border: 2px solid #00897b;
+}
+
+.calendar-day.today .day-number {
+  color: #00897b;
+  font-weight: 700;
+}
+
+/* Giorni con Appuntamenti */
+.calendar-day.has-appointments {
+  background-color: #f1f8ff;
+}
+
+/* Lista Appuntamenti nel Giorno */
+.day-appointments {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.appointment-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  background-color: white;
+  border-radius: 4px;
+  border-left: 3px solid #2196F3;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.appointment-item:hover {
+  transform: translateX(2px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.appointment-time {
+  font-weight: 600;
+  color: #212121;
+}
+
+.appointment-patient {
+  color: #757575;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.more-appointments {
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #00897b;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.more-appointments:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .calendar-day {
+    min-height: 100px;
+  }
+
+  .appointment-item {
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+
+  .day-appointments {
+    gap: 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-container {
+    padding: 16px;
+  }
+
+  .calendar-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .month-navigation {
+    flex-wrap: wrap;
+  }
+
+  .month-title {
+    font-size: 20px;
+  }
+
+  .calendar-day {
+    min-height: 80px;
+    padding: 4px;
+  }
+
+  .day-number {
+    font-size: 12px;
+  }
+
+  .appointment-item {
+    padding: 3px 4px;
+  }
+
+  .appointment-time {
+    font-size: 10px;
+  }
+
+  .appointment-patient {
+    font-size: 10px;
+  }
+}

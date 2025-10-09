@@ -19,6 +19,9 @@ import { InvoicesService } from '../../invoices/invoices.service';
 import { PdfGeneratorService } from '../../../core/pdf/pdf-generator.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { TimelineEventDialogComponent } from '../../../shared/components/timeline-event-dialog/timeline-event-dialog.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { DatabaseService } from '../../../core/database/database.service';
+import { PdfPreviewService } from '../../../core/services/pdf-preview.service';
 
 export interface TimelineEvent {
   date: Date;
@@ -45,7 +48,8 @@ export interface TimelineEvent {
     MatDialogModule,
     MatSnackBarModule,
     TranslateModule,
-    RouterLink
+    RouterLink,
+    MatTooltip
   ],
   templateUrl: './patient-detail.component.html',
   styleUrl: './patient-detail.component.css'
@@ -69,6 +73,8 @@ export class PatientDetailComponent implements OnInit {
   private reportsService = inject(ReportsService);
   private invoicesService = inject(InvoicesService);
   private pdfGenerator = inject(PdfGeneratorService);
+  private db = inject(DatabaseService);
+  private readonly pdfPreview = inject(PdfPreviewService);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -255,6 +261,13 @@ export class PatientDetailComponent implements OnInit {
   }
 
   /**
+   * Vai a Dettaglio fattura
+   */
+  protected goToInvoiceDetail(invoice: Invoice): void {
+    void this.router.navigate(['/invoices', invoice.id, 'edit']);
+  }
+
+  /**
    * Elimina fattura
    */
   protected deleteInvoice(invoice: Invoice): void {
@@ -304,6 +317,45 @@ export class PatientDetailComponent implements OnInit {
         this.openDeliveryDialog(event.data);
         break;
     }
+  }
+
+  /**
+   * Apre l'anteprima del PDF del referto
+   */
+  protected async previewReportPDF(baseReport: Report): Promise<void> {
+    const report = {
+      ...baseReport,
+      patientName: this.patient()!,
+    }
+    this.db.getPatientById(report.patientId).subscribe({
+      next: async (patient) => {
+        if (patient) {
+          try {
+            // Genera il PDF come Uint8Array
+            const doc = await this.pdfGenerator.generateReportPDF(report, patient);
+            const filename = `Referto_${report.reportNumber}_${patient.lastName}_${patient.firstName}.pdf`;
+
+            // Ottieni il PDF come Uint8Array
+            const pdfData = doc.output('arraybuffer');
+            const uint8Array = new Uint8Array(pdfData);
+
+            // Apri l'anteprima
+            this.pdfPreview.openPreview(uint8Array, filename);
+          } catch (error) {
+            console.error('Error generating PDF preview:', error);
+            this.snackBar.open('Errore durante la generazione dell\'anteprima', 'Chiudi', {
+              duration: 3000
+            });
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error loading patient:', error);
+        this.snackBar.open('Errore durante il caricamento dei dati', 'Chiudi', {
+          duration: 3000
+        });
+      }
+    });
   }
 
   /**
@@ -460,7 +512,10 @@ export class PatientDetailComponent implements OnInit {
    */
   private openReportDialog(report: Report): void {
     const dialogRef = this.dialog.open(TimelineEventDialogComponent, {
-      width: '600px',
+      width: 'auto',
+      minWidth: '500px',
+      maxWidth: '90vw',
+      panelClass: 'timeline-event-dialog',
       data: {
         type: 'report',
         title: `Referto ${report.reportNumber}`,
@@ -503,7 +558,10 @@ export class PatientDetailComponent implements OnInit {
    */
   private openInvoiceDialog(invoice: Invoice): void {
     const dialogRef = this.dialog.open(TimelineEventDialogComponent, {
-      width: '600px',
+      width: 'auto',
+      minWidth: '500px',
+      maxWidth: '90vw',
+      panelClass: 'timeline-event-dialog',
       data: {
         type: 'invoice',
         title: `Fattura ${invoice.invoiceNumber}`,
@@ -556,7 +614,10 @@ export class PatientDetailComponent implements OnInit {
     };
 
     this.dialog.open(TimelineEventDialogComponent, {
-      width: '600px',
+      width: 'auto',
+      minWidth: '500px',
+      maxWidth: '90vw',
+      panelClass: 'timeline-event-dialog',
       data: {
         type: 'delivery',
         title: 'Dettagli Parto',

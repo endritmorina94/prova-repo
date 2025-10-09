@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 import { TranslateModule } from '@ngx-translate/core';
 import { BabyGender, Delivery, DeliveryType } from '../../../shared/models';
 
@@ -32,7 +32,8 @@ export interface DeliveryDialogData {
     TranslateModule
   ],
   templateUrl: './delivery-dialog.component.html',
-  styleUrl: './delivery-dialog.component.css'
+  styleUrl: './delivery-dialog.component.css',
+  providers: [provideNativeDateAdapter()],
 })
 export class DeliveryDialogComponent implements OnInit {
   protected data = inject<DeliveryDialogData>(MAT_DIALOG_DATA);
