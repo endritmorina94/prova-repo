@@ -6,7 +6,7 @@ import { provideTranslateService } from "@ngx-translate/core";
 import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
 import { routes } from './app.routes';
 import { DatabaseService } from './core/database/database.service';
-import { SqliteDbService } from './core/database/sqlite-db.service';
+import { SqliteDbService } from './core/database/sqlite/sqlite-db.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [

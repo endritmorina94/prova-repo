@@ -60,6 +60,7 @@ export interface CreateReportDto {
   internalNotes?: string;
   doctorName?: string;
   doctorTitle?: string;
+
 }
 
 /**
