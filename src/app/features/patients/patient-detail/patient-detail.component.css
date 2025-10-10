@@ -455,3 +455,62 @@ mat-card-header {
 .timeline-item.clickable:hover .timeline-content {
   background: #eeeeee;
 }
+
+/* Appuntamenti */
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.appointment-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.appointment-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.appointment-icon mat-icon {
+  color: white;
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.appointment-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.appointment-info strong {
+  font-size: 15px;
+  color: #212121;
+}
+
+.appointment-meta {
+  font-size: 13px;
+  color: #757575;
+}
+
+.appointment-notes {
+  font-size: 13px;
+  color: #616161;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.appointment-actions {
+  display: flex;
+  gap: 4px;
+}

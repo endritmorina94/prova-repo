@@ -12,7 +12,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { PatientsService } from '../patients.service';
-import { CreateDeliveryDto, Delivery, Invoice, Patient, Report, UpdateDeliveryDto } from '../../../shared/models';
+import { Appointment, AppointmentStatus, CreateDeliveryDto, Delivery, Invoice, Patient, Report, UpdateDeliveryDto } from '../../../shared/models';
 import { DeliveryDialogComponent } from '../delivery-dialog/delivery-dialog.component';
 import { ReportsService } from '../../reports/reports.service';
 import { InvoicesService } from '../../invoices/invoices.service';
@@ -22,6 +22,7 @@ import { TimelineEventDialogComponent } from '../../../shared/components/timelin
 import { MatTooltip } from '@angular/material/tooltip';
 import { DatabaseService } from '../../../core/database/database.service';
 import { PdfPreviewService } from '../../../core/services/pdf-preview.service';
+import { AppointmentsService } from '../../appointments/appointments.service';
 
 export interface TimelineEvent {
   date: Date;
@@ -64,6 +65,8 @@ export class PatientDetailComponent implements OnInit {
   protected invoices = signal<Invoice[]>([]);
 // Aggiungi signal
   protected timelineEvents = signal<TimelineEvent[]>([]);
+// AGGIUNGI QUESTA PROPERTY NELLA CLASSE (insieme agli altri signals):
+  protected appointments = signal<Appointment[]>([]);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private patientsService = inject(PatientsService);
@@ -75,6 +78,8 @@ export class PatientDetailComponent implements OnInit {
   private pdfGenerator = inject(PdfGeneratorService);
   private db = inject(DatabaseService);
   private readonly pdfPreview = inject(PdfPreviewService);
+// AGGIUNGI QUESTO INJECT:
+  private appointmentsService = inject(AppointmentsService);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -359,6 +364,108 @@ export class PatientDetailComponent implements OnInit {
   }
 
   /**
+   * Formatta data e ora appuntamento
+   */
+  protected formatAppointmentDate(date: Date | string): string {
+    const d = new Date(date);
+    const dateStr = d.toLocaleDateString('it-IT');
+    const timeStr = d.toLocaleTimeString('it-IT', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    return `${dateStr} alle ${timeStr}`;
+  }
+
+  /**
+   * Label per tipo appuntamento
+   */
+  protected getAppointmentTypeLabel(type = 'follow_up'): string {
+    const key = `appointment.types.${type}`;
+    return this.translateService.instant(key);
+  }
+
+  /**
+   * Label per stato appuntamento
+   */
+  protected getAppointmentStatusLabel(status: AppointmentStatus): string {
+    const key = `appointment.statuses.${status}`;
+    return this.translateService.instant(key);
+  }
+
+  /**
+   * Colore per stato appuntamento (sfondo icona)
+   */
+  protected getAppointmentStatusColor(status: AppointmentStatus): string {
+    const colors: Record<AppointmentStatus, string> = {
+      scheduled: '#7b1fa2',
+      completed: '#388e3c',
+      cancelled: '#d32f2f',
+      confirmed: '#388e3c',
+      no_show: '#f57c00'
+    };
+    return colors[status] || '#757575';
+  }
+
+  /**
+   * Colore chip per stato appuntamento
+   */
+  protected getAppointmentStatusChipColor(status: AppointmentStatus): 'primary' | 'accent' | 'warn' | undefined {
+    if (status === 'completed') return 'primary';
+    if (status === 'cancelled' || status === 'no_show') return 'warn';
+    return 'accent';
+  }
+
+  /**
+   * Modifica appuntamento
+   */
+  protected editAppointment(appointment: Appointment): void {
+    // TODO: Implementare navigazione o dialog per modifica
+    this.router.navigate(['/appointments'], {
+      queryParams: { edit: appointment.id }
+    });
+  }
+
+  /**
+   * Elimina appuntamento
+   */
+  protected deleteAppointment(appointment: Appointment): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: this.translateService.instant('appointment.messages.confirm_delete'),
+        message: `${this.formatAppointmentDate(appointment.appointmentDate)} - ${this.getAppointmentTypeLabel(appointment?.appointmentType!)}`,
+        confirmText: this.translateService.instant('common.delete'),
+        cancelText: this.translateService.instant('common.cancel'),
+        confirmColor: 'warn'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.appointmentsService.deleteAppointment(appointment.id).subscribe({
+          next: () => {
+            const successMessage = this.translateService.instant('appointment.messages.deleted');
+            this.snackBar.open(
+              successMessage,
+              this.translateService.instant('common.close'),
+              { duration: 3000 }
+            );
+            this.loadAppointments(this.patientId());
+          },
+          error: (error) => {
+            console.error('Error deleting appointment:', error);
+            const errorMessage = this.translateService.instant('appointment.messages.error_delete');
+            this.snackBar.open(
+              errorMessage,
+              this.translateService.instant('common.close'),
+              { duration: 3000 }
+            );
+          }
+        });
+      }
+    });
+  }
+
+  /**
    * Carica referti del paziente
    */
   private loadReports(patientId: string): void {
@@ -491,6 +598,7 @@ export class PatientDetailComponent implements OnInit {
           this.loadDeliveries(id);
           this.loadReports(id);
           this.loadInvoices(id);
+          this.loadAppointments(id);
           // Aspetta che tutto sia caricato poi genera timeline
           setTimeout(() => {
             this.loadTimeline();
@@ -634,6 +742,24 @@ export class PatientDetailComponent implements OnInit {
           { label: 'Note', value: delivery.notes || '-', textarea: true }
         ],
         actions: []
+      }
+    });
+  }
+
+  /**
+   * Carica appuntamenti del paziente
+   */
+  private loadAppointments(patientId: string): void {
+    this.appointmentsService.getAppointmentsByPatient(patientId).subscribe({
+      next: (appointments) => {
+        // Ordina per data decrescente (più recenti prima)
+        const sorted = appointments.sort((a, b) =>
+          new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime()
+        );
+        this.appointments.set(sorted);
+      },
+      error: (error) => {
+        console.error('Error loading appointments:', error);
       }
     });
   }

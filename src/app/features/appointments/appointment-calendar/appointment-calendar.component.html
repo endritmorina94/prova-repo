@@ -2,7 +2,7 @@
 
   <!-- Header -->
   <div class="calendar-header">
-    <h1>{{ 'appointment.calendar' | translate }}</h1>
+    <h1>{{ 'appointment.calendar.title' | translate }}</h1>
     <button (click)="createAppointment()" color="primary" mat-raised-button>
       <mat-icon>add</mat-icon>
       {{ 'appointment.new_appointment' | translate }}
@@ -33,7 +33,7 @@
 
         <button (click)="goToToday()" mat-stroked-button>
           <mat-icon>today</mat-icon>
-          {{ 'appointment.today' | translate }}
+          {{ 'appointment.calendar.today' | translate }}
         </button>
       </div>
 

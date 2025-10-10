@@ -66,33 +66,33 @@ export class DashboardComponent implements OnInit {
   private loadStats(): void {
     this.loading.set(true);
 
-    // Carica pazienti
-    this.db.getPatients().subscribe({
-      next: (patients) => {
+    forkJoin({
+      patients: this.db.getPatients(),
+      todayAppointments: this.db.getTodayAppointmentsCount()
+    }).subscribe({
+      next: ({ patients, todayAppointments }) => {
         this.patientsCount.set(patients.length);
+        this.todayAppointmentsCount.set(todayAppointments);
 
-        // Per ogni paziente, carica referti e fatture
+        // Carica referti e fatture per ogni paziente
         if (patients.length === 0) {
           this.loading.set(false);
           return;
         }
 
-        const reportsObservables = patients.map(p => this.db.getReportsByPatient(p.id));
-        const invoicesObservables = patients.map(p => this.db.getInvoicesByPatient(p.id));
+        const reportObservables = patients.map(p => this.db.getReportsByPatient(p.id));
+        const invoiceObservables = patients.map(p => this.db.getInvoicesByPatient(p.id));
 
         forkJoin({
-          reports: forkJoin(reportsObservables),
-          invoices: forkJoin(invoicesObservables)
+          reports: forkJoin(reportObservables),
+          invoices: forkJoin(invoiceObservables)
         }).subscribe({
-          next: (result) => {
-            // Conta tutti i referti
-            const totalReports = result.reports.reduce((sum, reports) => sum + reports.length, 0);
+          next: ({ reports, invoices }) => {
+            const totalReports = reports.reduce((sum, arr) => sum + arr.length, 0);
+            const totalInvoices = invoices.reduce((sum, arr) => sum + arr.length, 0);
+
             this.reportsCount.set(totalReports);
-
-            // Conta tutte le fatture
-            const totalInvoices = result.invoices.reduce((sum, invoices) => sum + invoices.length, 0);
             this.invoicesCount.set(totalInvoices);
-
             this.loading.set(false);
           },
           error: (error) => {
@@ -102,7 +102,7 @@ export class DashboardComponent implements OnInit {
         });
       },
       error: (error) => {
-        console.error('Error loading patients:', error);
+        console.error('Error loading initial stats:', error);
         this.loading.set(false);
       }
     });

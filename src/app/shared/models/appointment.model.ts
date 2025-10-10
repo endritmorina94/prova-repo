@@ -1,7 +1,7 @@
 /**
  * Stati appuntamento
  */
-export type AppointmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+export type AppointmentStatus = 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
 
 /**
  * Modello Appuntamento
@@ -10,14 +10,16 @@ export interface Appointment {
   id: string;
   patientId: string;
   studioId: string;
+
+  // Dati Appuntamento
   appointmentDate: Date;
   duration: number; // Minuti
-  reason?: string;
-  notes?: string;
+  appointmentType?: string;
   status: AppointmentStatus;
-  createdBy?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  notes?: string;
+
+  // Reminder
+  reminderSent: boolean;
 
   // Dati paziente denormalizzati per performance
   patient?: {
@@ -27,6 +29,11 @@ export interface Appointment {
     phone?: string;
     mobile?: string;
   };
+
+  // Metadata
+  createdBy?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**
@@ -36,36 +43,15 @@ export interface CreateAppointmentDto {
   patientId: string;
   studioId: string;
   appointmentDate: Date;
-  duration: number;
-  reason?: string;
+  duration?: number; // Default 30
+  appointmentType?: string;
+  status?: AppointmentStatus; // Default 'scheduled'
   notes?: string;
-  status: AppointmentStatus;
-  createdBy?: string;
 }
 
 /**
  * DTO per aggiornamento appuntamento
  */
-export interface UpdateAppointmentDto extends Partial<CreateAppointmentDto> {}
-
-/**
- * Filtri per ricerca appuntamenti
- */
-export interface AppointmentFilters {
-  startDate?: Date;
-  endDate?: Date;
-  patientId?: string;
-  status?: AppointmentStatus;
-}
-
-/**
- * Evento calendario per UI
- */
-export interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  color: string;
-  appointment: Appointment;
+export interface UpdateAppointmentDto extends Partial<CreateAppointmentDto> {
+  reminderSent?: boolean;
 }

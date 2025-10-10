@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { catchError, from, Observable, throwError } from 'rxjs';
 import Database from '@tauri-apps/plugin-sql';
 import { DatabaseService } from './database.service';
-import { Activity, CreateActivityDto, CreateDeliveryDto, CreateInvoiceDto, CreatePatientDto, CreateReportDto, Delivery, Invoice, Patient, Report, Studio, UpdateDeliveryDto, UpdateInvoiceDto, UpdatePatientDto, UpdateReportDto, UpdateStudioDto } from '../../shared/models';
+import { Activity, Appointment, AppointmentStatus, CreateActivityDto, CreateAppointmentDto, CreateDeliveryDto, CreateInvoiceDto, CreatePatientDto, CreateReportDto, Delivery, Invoice, Patient, Report, Studio, UpdateAppointmentDto, UpdateDeliveryDto, UpdateInvoiceDto, UpdatePatientDto, UpdateReportDto, UpdateStudioDto } from '../../shared/models';
 
 /**
  * SQLite Database Service per Tauri
@@ -548,133 +548,72 @@ export class SqliteDbService extends DatabaseService {
   createActivity(data: CreateActivityDto): Observable<Activity> {
     throw new Error('Activities not implemented yet');
   }
+// ==================== APPOINTMENTS ====================
 
-  getAppointments(filters?: any): Observable<any[]> {
+  getAppointments(filters?: {
+    startDate?: Date;
+    endDate?: Date;
+    status?: string;
+    patientId?: string
+  }): Observable<Appointment[]> {
     return from(
       this.ensureInitialized().then(async (db) => {
         let query = 'SELECT * FROM appointments WHERE 1=1';
         const params: any[] = [];
 
         if (filters?.startDate) {
+          query += ' AND appointment_date >= ?';
           params.push(filters.startDate.toISOString());
-          query += ` AND appointment_date >= $${params.length}`;
         }
 
         if (filters?.endDate) {
+          query += ' AND appointment_date <= ?';
           params.push(filters.endDate.toISOString());
-          query += ` AND appointment_date <= $${params.length}`;
-        }
-
-        if (filters?.patientId) {
-          params.push(filters.patientId);
-          query += ` AND patient_id = $${params.length}`;
         }
 
         if (filters?.status) {
+          query += ' AND status = ?';
           params.push(filters.status);
-          query += ` AND status = $${params.length}`;
+        }
+
+        if (filters?.patientId) {
+          query += ' AND patient_id = ?';
+          params.push(filters.patientId);
         }
 
         query += ' ORDER BY appointment_date ASC';
 
-        const results = await db.select<any[]>(query, params);
-
-        const appointments = await Promise.all(
-          results.map(async (row) => {
-            const patientResults = await db.select<any[]>(
-              'SELECT id, first_name, last_name, phone, mobile FROM patients WHERE id = $1',
-              [row.patient_id]
-            );
-
-            return {
-              id: row.id,
-              patientId: row.patient_id,
-              studioId: row.studio_id,
-              appointmentDate: new Date(row.appointment_date),
-              duration: row.duration,
-              reason: row.reason,
-              notes: row.notes,
-              status: row.status,
-              createdBy: row.created_by,
-              createdAt: new Date(row.created_at),
-              updatedAt: new Date(row.updated_at),
-              patient: patientResults[0] ? {
-                id: patientResults[0].id,
-                firstName: patientResults[0].first_name,
-                lastName: patientResults[0].last_name,
-                phone: patientResults[0].phone,
-                mobile: patientResults[0].mobile
-              } : undefined
-            };
-          })
-        );
-
-        return appointments;
+        const result = await db.select<any[]>(query, params);
+        return result.map(this.mapAppointmentFromDb);
       })
-    ).pipe(catchError(this.handleError));
+    );
   }
 
-  getAppointmentsByPatient(patientId: string): Observable<any[]> {
-    return this.getAppointments({ patientId });
-  }
-
-  getAppointmentsByDate(date: Date): Observable<any[]> {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    return this.getAppointments({
-      startDate: startOfDay,
-      endDate: endOfDay
-    });
-  }
-
-  getAppointmentById(id: string): Observable<any | null> {
+  getAppointmentById(id: string): Observable<Appointment | null> {
     return from(
       this.ensureInitialized().then(async (db) => {
-        const results = await db.select<any[]>(
-          'SELECT * FROM appointments WHERE id = $1',
+        const result = await db.select<any[]>(
+          'SELECT * FROM appointments WHERE id = ?',
           [id]
         );
-
-        if (results.length === 0) return null;
-
-        const row = results[0];
-
-        const patientResults = await db.select<any[]>(
-          'SELECT id, first_name, last_name, phone, mobile FROM patients WHERE id = $1',
-          [row.patient_id]
-        );
-
-        return {
-          id: row.id,
-          patientId: row.patient_id,
-          studioId: row.studio_id,
-          appointmentDate: new Date(row.appointment_date),
-          duration: row.duration,
-          reason: row.reason,
-          notes: row.notes,
-          status: row.status,
-          createdBy: row.created_by,
-          createdAt: new Date(row.created_at),
-          updatedAt: new Date(row.updated_at),
-          patient: patientResults[0] ? {
-            id: patientResults[0].id,
-            firstName: patientResults[0].first_name,
-            lastName: patientResults[0].last_name,
-            phone: patientResults[0].phone,
-            mobile: patientResults[0].mobile
-          } : undefined
-        };
+        return result.length > 0 ? this.mapAppointmentFromDb(result[0]) : null;
       })
-    ).pipe(catchError(this.handleError));
+    );
   }
 
-  // ==================== STUDIO ====================
+  getAppointmentsByPatient(patientId: string): Observable<Appointment[]> {
+    return from(
+      this.ensureInitialized().then(async (db) => {
+        const result = await db.select<any[]>(
+          'SELECT * FROM appointments WHERE patient_id = ? ORDER BY appointment_date DESC',
+          [patientId]
+        );
+        return result.map(this.mapAppointmentFromDb);
+      })
+    );
+  }
 
-  createAppointment(data: any): Observable<any> {
+  createAppointment(data: CreateAppointmentDto): Observable<Appointment> {
     return from(
       this.ensureInitialized().then(async (db) => {
         const id = crypto.randomUUID();
@@ -682,82 +621,155 @@ export class SqliteDbService extends DatabaseService {
 
         await db.execute(
           `INSERT INTO appointments (
-          id, patient_id, studio_id, appointment_date, duration,
-          reason, notes, status, created_by, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          id, patient_id, studio_id, appointment_date,
+          duration, appointment_type, status, notes,
+          reminder_sent, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             id,
             data.patientId,
-            data.studioId || this.DEFAULT_STUDIO_ID,
-            data.appointmentDate.toISOString(),
-            data.duration,
-            data.reason,
-            data.notes,
-            data.status,
-            data.createdBy,
+            data.studioId,
+            new Date(data.appointmentDate).toISOString(),
+            data.duration || 30,
+            data.appointmentType || null,
+            data.status || 'scheduled',
+            data.notes || null,
+            0, // SQLite usa 0/1 per boolean
             now,
             now
           ]
         );
 
-        return this.getAppointmentById(id).toPromise();
-      })
-    ).pipe(catchError(this.handleError));
-  }
-
-  updateAppointment(id: string, data: any): Observable<any> {
-    return from(
-      this.ensureInitialized().then(async (db) => {
-        const now = new Date().toISOString();
-
+        // Crea attività nella timeline
         await db.execute(
-          `UPDATE appointments SET
-          appointment_date = $1, duration = $2, reason = $3,
-          notes = $4, status = $5, updated_at = $6
-         WHERE id = $7`,
+          `INSERT INTO activities (
+          id, patient_id, activity_type, activity_date,
+          description, reference_id, reference_type, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
-            data.appointmentDate?.toISOString(),
-            data.duration,
-            data.reason,
-            data.notes,
-            data.status,
-            now,
-            id
+            crypto.randomUUID(),
+            data.patientId,
+            'appointment_created',
+            new Date(data.appointmentDate).toISOString(),
+            `Appuntamento programmato${data.appointmentType ? ': ' + data.appointmentType : ''}`,
+            id,
+            'appointment',
+            now
           ]
         );
 
-        return this.getAppointmentById(id).toPromise();
+        const result = await db.select<any[]>(
+          'SELECT * FROM appointments WHERE id = ?',
+          [id]
+        );
+
+        return this.mapAppointmentFromDb(result[0]);
       })
-    ).pipe(catchError(this.handleError));
+    );
   }
 
-  // ==================== ACTIVITIES (not implemented yet) ====================
+  updateAppointment(id: string, data: UpdateAppointmentDto): Observable<Appointment> {
+    return from(
+      this.ensureInitialized().then(async (db) => {
+        const updates: string[] = [];
+        const params: any[] = [];
+
+        if (data.appointmentDate !== undefined) {
+          updates.push('appointment_date = ?');
+          params.push(new Date(data.appointmentDate).toISOString());
+        }
+
+        if (data.duration !== undefined) {
+          updates.push('duration = ?');
+          params.push(data.duration);
+        }
+
+        if (data.appointmentType !== undefined) {
+          updates.push('appointment_type = ?');
+          params.push(data.appointmentType);
+        }
+
+        if (data.status !== undefined) {
+          updates.push('status = ?');
+          params.push(data.status);
+        }
+
+        if (data.notes !== undefined) {
+          updates.push('notes = ?');
+          params.push(data.notes);
+        }
+
+        if (data.reminderSent !== undefined) {
+          updates.push('reminder_sent = ?');
+          params.push(data.reminderSent ? 1 : 0);
+        }
+
+        updates.push('updated_at = ?');
+        params.push(new Date().toISOString());
+        params.push(id);
+
+        await db.execute(
+          `UPDATE appointments SET ${updates.join(', ')} WHERE id = ?`,
+          params
+        );
+
+        const result = await db.select<any[]>(
+          'SELECT * FROM appointments WHERE id = ?',
+          [id]
+        );
+
+        return this.mapAppointmentFromDb(result[0]);
+      })
+    );
+  }
 
   deleteAppointment(id: string): Observable<void> {
     return from(
       this.ensureInitialized().then(async (db) => {
-        await db.execute('DELETE FROM appointments WHERE id = $1', [id]);
+        await db.execute('DELETE FROM appointments WHERE id = ?', [id]);
       })
-    ).pipe(catchError(this.handleError));
+    );
   }
 
-  getTodayAppointments(): Observable<any[]> {
-    return this.getAppointmentsByDate(new Date());
-  }
-
-
-  // ==================== APPOINTMENTS ====================
-
-  countAppointmentsByStatus(status: string): Observable<number> {
+  getTodayAppointmentsCount(): Observable<number> {
     return from(
       this.ensureInitialized().then(async (db) => {
-        const results = await db.select<any[]>(
-          'SELECT COUNT(*) as count FROM appointments WHERE status = $1',
-          [status]
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const result = await db.select<any[]>(
+          `SELECT COUNT(*) as count FROM appointments
+         WHERE appointment_date >= ?
+         AND appointment_date < ?
+         AND status IN ('scheduled', 'confirmed')`,
+          [today.toISOString(), tomorrow.toISOString()]
         );
-        return results[0].count;
+
+        return result[0]?.count || 0;
       })
-    ).pipe(catchError(this.handleError));
+    );
+  }
+
+  /**
+   * Helper per mappare row DB a modello Appointment
+   */
+  private mapAppointmentFromDb(row: any): Appointment {
+    return {
+      id: row.id,
+      patientId: row.patient_id,
+      studioId: row.studio_id,
+      appointmentDate: new Date(row.appointment_date),
+      duration: row.duration, // ✅ CORRETTO
+      appointmentType: row.appointment_type,
+      status: row.status as AppointmentStatus,
+      notes: row.notes,
+      reminderSent: Boolean(row.reminder_sent),
+      createdBy: row.created_by,
+      createdAt: new Date(row.created_at),
+      updatedAt: new Date(row.updated_at)
+    };
   }
 
   /**
@@ -951,17 +963,35 @@ export class SqliteDbService extends DatabaseService {
         patient_id TEXT NOT NULL,
         studio_id TEXT NOT NULL,
         appointment_date TEXT NOT NULL,
-        duration INTEGER NOT NULL,
-        reason TEXT,
-        notes TEXT,
+        duration INTEGER NOT NULL DEFAULT 30,
+        appointment_type TEXT,
         status TEXT NOT NULL,
+        notes TEXT,
+        reminder_sent INTEGER NOT NULL DEFAULT 0,
         created_by TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
         FOREIGN KEY (studio_id) REFERENCES studios(id) ON DELETE CASCADE
-      )
+        )
     `);
+
+    // Tabella Activities (Timeline)
+    await this.db.execute(`
+  CREATE TABLE IF NOT EXISTS activities (
+    id TEXT PRIMARY KEY,
+    patient_id TEXT NOT NULL,
+    activity_type TEXT NOT NULL,
+    activity_date TEXT NOT NULL,
+    description TEXT NOT NULL,
+    reference_id TEXT,
+    reference_type TEXT,
+    created_by TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+  )
+`);
+
 
     // Crea indici per performance
     await this.db.execute('CREATE INDEX IF NOT EXISTS idx_patients_name ON patients(last_name, first_name)');
@@ -969,8 +999,10 @@ export class SqliteDbService extends DatabaseService {
     await this.db.execute('CREATE INDEX IF NOT EXISTS idx_deliveries_patient ON deliveries(patient_id, delivery_date)');
     await this.db.execute('CREATE INDEX IF NOT EXISTS idx_reports_patient ON reports(patient_id, report_date)');
     await this.db.execute('CREATE INDEX IF NOT EXISTS idx_invoices_patient ON invoices(patient_id, invoice_date)');
-    await this.db.execute('CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments(appointment_date)');
-    await this.db.execute('CREATE INDEX IF NOT EXISTS idx_appointments_patient ON appointments(patient_id)');
+    await this.db.execute('CREATE INDEX IF NOT EXISTS idx_appointments_patient_date ON appointments(patient_id, appointment_date DESC)');
+    await this.db.execute(`CREATE INDEX IF NOT EXISTS idx_appointments_date ON appointments(appointment_date)`);
+    await this.db.execute(`CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointments(status)`);
+    await this.db.execute(`CREATE INDEX IF NOT EXISTS idx_activities_patient_date ON activities(patient_id, activity_date DESC)`);
   }
 
   /**

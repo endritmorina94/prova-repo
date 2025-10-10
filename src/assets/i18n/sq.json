@@ -20,7 +20,8 @@
     "success": "Operacioni u krye me sukses",
     "view": "Shiko",
     "coming_soon": "Së shpejti",
-    "years": "vjeç"
+    "years": "vjeç",
+    "update": "Përditëso"
   },
   "nav": {
     "dashboard": "Paneli",
@@ -95,8 +96,10 @@
     },
     "tabs": {
       "info": "Informacione",
+      "deliveries": "Historia e Lindjes",
       "reports": "Raportet",
       "invoices": "Faturat",
+      "appointments": "Takimet",
       "timeline": "Kronologjia"
     },
     "privacy": {
@@ -221,25 +224,46 @@
   },
   "appointment": {
     "title": "Takimet",
-    "calendar": "Kalendari",
-    "list": "Lista e Takimeve",
     "new_appointment": "Takim i Ri",
-    "edit_appointment": "Ndrysho Takimin",
-    "appointment_date": "Data dhe Ora",
+    "edit_appointment": "Ndrysho Takim",
+    "appointment_date": "Data e Takimit",
+    "appointment_time": "Ora",
     "duration": "Kohëzgjatja (minuta)",
-    "patient": "Pacienti",
-    "reason": "Arsyeja",
-    "notes": "Shënime",
+    "appointment_type": "Lloji i Vizitës",
     "status": "Statusi",
-    "today": "Sot",
-    "this_week": "Këtë Javë",
-    "this_month": "Këtë Muaj",
-    "all": "Të Gjitha",
+    "notes": "Shënime",
+    "patient": "Pacienti",
+    "select_patient": "Zgjidh Pacient",
+    "no_appointments": "Nuk ka takime të programuara",
+    "types": {
+      "first_visit": "Vizita e Parë",
+      "follow_up": "Kontroll",
+      "ultrasound": "Ekografi",
+      "prenatal": "Vizitë Paralindje",
+      "postnatal": "Vizitë Pas Lindjes",
+      "consultation": "Konsultim",
+      "other": "Tjetër"
+    },
     "statuses": {
       "scheduled": "I Planifikuar",
+      "confirmed": "I Konfirmuar",
       "completed": "I Përfunduar",
       "cancelled": "I Anulluar",
       "no_show": "Nuk u Paraqit"
+    },
+    "calendar": {
+      "title": "Kalendari i Takimeve",
+      "today": "Sot",
+      "week": "Javë",
+      "month": "Muaj",
+      "day": "Ditë",
+      "no_appointments": "Nuk ka takime të planifikuara për këtë periudhë"
+    },
+    "filters": {
+      "all": "Të Gjitha",
+      "today": "Sot",
+      "this_week": "Këtë Javë",
+      "this_month": "Këtë Muaj"
     },
     "messages": {
       "created": "Takimi u krijua me sukses",
@@ -248,12 +272,7 @@
       "error_save": "Gabim gjatë ruajtjes së takimit",
       "error_load": "Gabim gjatë ngarkimit të takimit",
       "error_delete": "Gabim gjatë fshirjes së takimit",
-      "confirm_delete": "Jeni të sigurt që dëshironi të fshini këtë takim?"
-    },
-    "filters": {
-      "filter_by_status": "Filtro sipas Statusit",
-      "filter_by_date": "Filtro sipas Datës",
-      "search_patient": "Kërko Pacientin"
+      "confirm_delete": "Jeni i sigurt që dëshironi të fshini këtë takim?"
     }
   }
 }

@@ -203,7 +203,7 @@ export class AppointmentDialogComponent implements OnInit {
       appointmentDate: date,
       appointmentTime: time,
       duration: appointment.duration,
-      reason: appointment.reason,
+      reason: appointment.appointmentType,
       notes: appointment.notes,
       status: appointment.status
     });

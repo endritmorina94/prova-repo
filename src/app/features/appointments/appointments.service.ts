@@ -1,47 +1,101 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { DatabaseService } from '../../core/database/database.service';
-import { Appointment, AppointmentFilters, AppointmentStatus, CreateAppointmentDto, UpdateAppointmentDto } from '../../shared/models';
+import { Appointment, AppointmentStatus, CreateAppointmentDto, UpdateAppointmentDto } from '../../shared/models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentsService {
-  currentAppointment = signal<Appointment | null>(null);
   private db = inject(DatabaseService);
-  // Signals per cache
+
+  // Signal per cache locale (opzionale)
   private appointmentsCache = signal<Appointment[]>([]);
 
   /**
-   * Ottiene appuntamenti con filtri
+   * Cache signal (per componenti che vogliono usare signals)
    */
-  getAppointments(filters?: AppointmentFilters): Observable<Appointment[]> {
+  get appointments() {
+    return this.appointmentsCache.asReadonly();
+  }
+
+  /**
+   * Ottiene tutti gli appuntamenti con filtri
+   */
+  getAppointments(filters?: {
+    startDate?: Date;
+    endDate?: Date;
+    status?: string;
+    patientId?: string
+  }): Observable<Appointment[]> {
     return this.db.getAppointments(filters).pipe(
-      tap(appointments => this.appointmentsCache.set(appointments))
+      tap(appointments => {
+        if (!filters) {
+          this.appointmentsCache.set(appointments);
+        }
+      })
     );
-  }
-
-  /**
-   * Ottiene appuntamenti per paziente
-   */
-  getAppointmentsByPatient(patientId: string): Observable<Appointment[]> {
-    return this.db.getAppointmentsByPatient(patientId);
-  }
-
-  /**
-   * Ottiene appuntamenti per data
-   */
-  getAppointmentsByDate(date: Date): Observable<Appointment[]> {
-    return this.db.getAppointmentsByDate(date);
   }
 
   /**
    * Ottiene appuntamento per ID
    */
   getAppointmentById(id: string): Observable<Appointment | null> {
-    return this.db.getAppointmentById(id).pipe(
-      tap(appointment => this.currentAppointment.set(appointment))
-    );
+    return this.db.getAppointmentById(id);
+  }
+
+  /**
+   * Ottiene tutti gli appuntamenti di un paziente
+   */
+  getAppointmentsByPatient(patientId: string): Observable<Appointment[]> {
+    return this.db.getAppointmentsByPatient(patientId);
+  }
+
+  /**
+   * Ottiene appuntamenti di oggi
+   */
+  getTodayAppointments(): Observable<Appointment[]> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    return this.getAppointments({
+      startDate: today,
+      endDate: tomorrow
+    });
+  }
+
+  /**
+   * Ottiene appuntamenti della settimana corrente
+   */
+  getThisWeekAppointments(): Observable<Appointment[]> {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay()); // Domenica
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+
+    return this.getAppointments({
+      startDate: startOfWeek,
+      endDate: endOfWeek
+    });
+  }
+
+  /**
+   * Ottiene appuntamenti del mese corrente
+   */
+  getThisMonthAppointments(): Observable<Appointment[]> {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    return this.getAppointments({
+      startDate: startOfMonth,
+      endDate: endOfMonth
+    });
   }
 
   /**
@@ -49,8 +103,9 @@ export class AppointmentsService {
    */
   createAppointment(data: CreateAppointmentDto): Observable<Appointment> {
     return this.db.createAppointment(data).pipe(
-      tap(appointment => {
-        this.appointmentsCache.update(apps => [...apps, appointment]);
+      tap(() => {
+        // Invalida cache
+        this.invalidateCache();
       })
     );
   }
@@ -60,13 +115,9 @@ export class AppointmentsService {
    */
   updateAppointment(id: string, data: UpdateAppointmentDto): Observable<Appointment> {
     return this.db.updateAppointment(id, data).pipe(
-      tap(updatedAppointment => {
-        this.appointmentsCache.update(apps =>
-          apps.map(a => a.id === id ? updatedAppointment : a)
-        );
-        if (this.currentAppointment()?.id === id) {
-          this.currentAppointment.set(updatedAppointment);
-        }
+      tap(() => {
+        // Invalida cache
+        this.invalidateCache();
       })
     );
   }
@@ -77,28 +128,17 @@ export class AppointmentsService {
   deleteAppointment(id: string): Observable<void> {
     return this.db.deleteAppointment(id).pipe(
       tap(() => {
-        this.appointmentsCache.update(apps =>
-          apps.filter(a => a.id !== id)
-        );
-        if (this.currentAppointment()?.id === id) {
-          this.currentAppointment.set(null);
-        }
+        // Invalida cache
+        this.invalidateCache();
       })
     );
   }
 
   /**
-   * Ottiene appuntamenti di oggi
+   * Conta appuntamenti di oggi
    */
-  getTodayAppointments(): Observable<Appointment[]> {
-    return this.db.getTodayAppointments();
-  }
-
-  /**
-   * Conta appuntamenti per stato
-   */
-  countAppointmentsByStatus(status: AppointmentStatus): Observable<number> {
-    return this.db.countAppointmentsByStatus(status);
+  getTodayAppointmentsCount(): Observable<number> {
+    return this.db.getTodayAppointmentsCount();
   }
 
   /**
@@ -136,6 +176,7 @@ export class AppointmentsService {
     const colors = {
       scheduled: '#2196F3',   // Blue
       completed: '#4CAF50',   // Green
+      confirmed: '#4CAF50',   // Green
       cancelled: '#9E9E9E',   // Gray
       no_show: '#F44336'      // Red
     };
@@ -149,9 +190,18 @@ export class AppointmentsService {
     const labels = {
       scheduled: 'Programmato',
       completed: 'Completato',
+      confirmed: 'Confermato',
       cancelled: 'Cancellato',
       no_show: 'Non Presentato'
     };
     return labels[status] || status;
+  }
+
+  /**
+   * Invalida cache
+   */
+  private invalidateCache(): void {
+    // Ricarica appointments se necessario
+    this.getAppointments().subscribe();
   }
 }

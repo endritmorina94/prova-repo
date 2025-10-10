@@ -393,7 +393,74 @@
           }
         </div>
       </mat-tab>
-      <!-- TAB 4: Timeline -->
+      <!-- TAB 4: Appuntamenti -->
+      <mat-tab [label]="'patient.tabs.appointments' | translate">
+        <div class="tab-content">
+          @if (appointments().length > 0) {
+            <mat-card>
+              <mat-card-content>
+                <div class="appointments-list">
+                  @for (appointment of appointments(); track appointment.id) {
+                    <div class="appointment-item">
+                      <div [style.background-color]="getAppointmentStatusColor(appointment.status)"
+                           class="appointment-icon">
+                        <mat-icon>event</mat-icon>
+                      </div>
+                      <div class="appointment-info">
+                        <strong>{{ formatAppointmentDate(appointment.appointmentDate) }}</strong>
+                        <div class="appointment-meta">
+                          {{ getAppointmentTypeLabel(appointment?.appointmentType) }} ·
+                          {{ appointment.duration }} min
+                        </div>
+                        @if (appointment.notes) {
+                          <div class="appointment-notes">{{ appointment.notes }}</div>
+                        }
+                      </div>
+                      <mat-chip [color]="getAppointmentStatusChipColor(appointment.status)">
+                        {{ getAppointmentStatusLabel(appointment.status) }}
+                      </mat-chip>
+                      <div class="appointment-actions">
+                        <button
+                          (click)="editAppointment(appointment)"
+                          [matTooltip]="'common.edit' | translate"
+                          mat-icon-button>
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                        <button
+                          (click)="deleteAppointment(appointment)"
+                          [matTooltip]="'common.delete' | translate"
+                          color="warn"
+                          mat-icon-button>
+                          <mat-icon>delete</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                  }
+                </div>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <mat-card>
+              <mat-card-content>
+                <div class="empty-state">
+                  <mat-icon>event</mat-icon>
+                  <p>{{ 'appointment.no_appointments' | translate }}</p>
+                  <button
+                    [queryParams]="{patientId: patientId()}"
+                    [routerLink]="['/appointments']"
+                    color="primary"
+                    mat-raised-button>
+                    <mat-icon>add</mat-icon>
+                    {{ 'appointment.new_appointment' | translate }}
+                  </button>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-tab>
+      <!-- TAB 5: Timeline -->
       <mat-tab label="Timeline">
         <div class="tab-content">
           <mat-card>

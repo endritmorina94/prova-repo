@@ -227,7 +227,7 @@ model Activity {
 }
 
 // ============================================
-// FASE 2: Appuntamenti (preparato ma non usato)
+// FASE 2: Appuntamenti
 // ============================================
 
 /// Appuntamenti
@@ -237,10 +237,12 @@ model Appointment {
   studioId  String @map("studio_id")
 
   appointmentDate DateTime @map("appointment_date")
-  duration        Int // Minuti
-  reason          String?
+  duration        Int      @default(30) // Minuti
+  appointmentType String?  @map("appointment_type")
+  status          String // 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show'
   notes           String?
-  status          String // 'scheduled' | 'completed' | 'cancelled' | 'no_show'
+
+  reminderSent Boolean @default(false) @map("reminder_sent")
 
   createdBy String?  @map("created_by")
   createdAt DateTime @default(now()) @map("created_at")
@@ -250,6 +252,8 @@ model Appointment {
   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   studio  Studio  @relation(fields: [studioId], references: [id], onDelete: Cascade)
 
+  @@index([patientId, appointmentDate(sort: Desc)])
   @@index([appointmentDate])
+  @@index([status])
   @@map("appointments")
 }
