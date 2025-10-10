@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { Delivery, Invoice, Patient, Report } from '../../shared/models';
-import { SqliteDbService } from './sqlite-db.service';
+import { SqliteDbService } from './sqlite/sqlite-db.service';
 
 /**
  * Servizio per migrare i dati da localStorage a SQLite
