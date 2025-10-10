@@ -11,7 +11,7 @@ import { Activity, Appointment, AppointmentStatus, CreateActivityDto, CreateAppo
 @Injectable({
   providedIn: 'root'
 })
-export class SqliteDbService extends DatabaseService {
+export class SqliteDbService2 extends DatabaseService {
   private db: Database | null = null;
   private readonly DEFAULT_STUDIO_ID = 'default-studio-id';
   private initialized = false;
@@ -766,7 +766,6 @@ export class SqliteDbService extends DatabaseService {
       status: row.status as AppointmentStatus,
       notes: row.notes,
       reminderSent: Boolean(row.reminder_sent),
-      createdBy: row.created_by,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at)
     };
